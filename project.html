@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stationery Management System</title>
+
+<!-- Excel Library -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f9;
+    color: #27364b;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    background: rgb(192, 182, 182);
+    color: white;
+    padding: 25px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 25px 40px;
+}
+
+.header .container {
+    padding-bottom: 0;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.title{
+    color: #053170;
+    position: absolute;
+    top: 40px;
+    right : 50px;
+    left: 30px;
+    text-align: center;
+}
+
+.subtitle {
+    margin: 8px 0 0;
+    font-size: 16px;
+    opacity: 0.85;
+    color: red;
+}
+
+/* ================= CARD ================= */
+
+.card {
+    background: white;
+    margin-top: 25px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.section-title {
+    font-size: 21px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+/* ================= THREE COLUMN ================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.required {
+    color: red;
+}
+
+input,
+select {
+    width: 100%;
+    height: 43px;
+    border: 1px solid #b9c0c8;
+    border-radius: 5px;
+    padding: 0 11px;
+    font-size: 15px;
+    background: white;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #26364d;
+    box-shadow: 0 0 0 2px rgba(38,54,77,0.12);
+}
+
+/* ================= ITEMS TABLE ================= */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    min-width: 700px;
+}
+
+.items-table th,
+.items-table td {
+    border: 1px solid #c7ced8;
+    padding: 8px;
+}
+
+.items-table th {
+    background: #e8edf5;
+    font-size: 14px;
+    text-align: left;
+}
+
+.items-table td:first-child {
+    width: 50px;
+    text-align: center;
+    background: #eef2f8;
+    font-weight: bold;
+}
+
+.items-table select {
+    height: 40px;
+}
+
+/* ================= BUTTONS ================= */
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+button {
+    border: 0;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.submit-btn {
+    background: #26364d;
+    color: white;
+}
+
+.admin-btn {
+    background: #6d28d9;
+    color: white;
+}
+
+.excel-btn {
+    background: #217346;
+    color: white;
+}
+
+.clear-btn {
+    background: #e5e7eb;
+    color: #26364d;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* ================= MESSAGE ================= */
+
+#message {
+    display: none;
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 5px;
+}
+
+/* ================= ADMIN LOGIN ================= */
+
+.admin-login {
+    max-width: 450px;
+    margin: 30px auto;
+}
+
+.admin-login h2 {
+    margin-top: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.login-error {
+    margin-top: 15px;
+    padding: 10px;
+    color: #991b1b;
+    background: #fee2e2;
+    border-radius: 5px;
+}
+
+/* ================= ADMIN TABLE ================= */
+
+.admin-panel {
+    margin-top: 25px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 13px;
+    min-width: 1100px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #d1d5db;
+    padding: 9px;
+    text-align: left;
+}
+
+.admin-table th {
+    background: #e8edf5;
+}
+
+.admin-info {
+    background: #eaf7ee;
+    color: #166534;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 850px) {
+
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 0 15px 30px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <div class="container">
+
+        <img src="Logo.jpeg" alt="image" width="15%" >
+
+        <div class="title">
+            <h1>Ocean Lifespaces India private limited</h1>
+        <p class="subtitle">
+            Stationery Management System
+        </p>
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     USER FORM
+===================================================== -->
+
+<main class="container">
+
+<section class="card" id="userSection">
+
+    <div class="section-title">
+        Stationery Request Form
+    </div>
+
+
+    <form id="stationeryForm">
+
+        <!-- ================= THREE COLUMN FORM ================= -->
+
+        <div class="form-grid">
+
+            <!-- PROJECT -->
+
+            <div class="form-group">
+
+                <label>
+                    Name Of The Project
+                    <span class="required">*</span>
+                </label>
+
+                <select id="project" required>
+
+                    <option value="">
+                        Choose
+                    </option>
+
+                    <option value="EY-Global Kochi">
+                        EY-Global Kochi
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- COMPANY -->
+
+            <div class="form-group">
+
+                <label>
+                    Company
+                    <span class="required">*</span>
+                </label>
+
+                <select id="company" required>
+
+                    <option value="">
+                        Choose
+                    </option>
+
+                    <option value="Ocean Lifespaces">
+                        Ocean Lifespaces
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- EMPLOYEE NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Employee Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeName"
+                    placeholder="Your Answer"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMPLOYEE NUMBER -->
+
+            <div class="form-group">
+
+                <label>
+                    Emp-No
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="empNo"
+                    placeholder="Your Answer"
+                    required
+                >
+
+            </div>
+
+
+            <!-- MOBILE -->
+
+            <div class="form-group">
+
+                <label>
+                    Mobile Number
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    placeholder="Your Answer"
+                    required
+                >
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+
+            <div class="form-group">
+
+                <label>
+                    Department
+                    <span class="required">*</span>
+                </label>
+
+                <select id="department" required>
+
+                    <option value="">
+                        Choose
+                    </option>
+
+                    <option>Administration</option>
+                    <option>Compliances</option>
+                    <option>EHS & Safety</option>
+                    <option>HR</option>
+                    <option>IT</option>
+                    <option>MEP</option>
+                    <option>OHC</option>
+                    <option>P&M</option>
+                    <option>Planning & Documents</option>
+                    <option>Project</option>
+                    <option>QS & Billing</option>
+                    <option>Quality(QA QC)</option>
+                    <option>Security Team</option>
+                    <option>Site Execution</option>
+                    <option>Store</option>
+                    <option>Survey</option>
+                    <option>Other's</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- DATE -->
+
+            <div class="form-group">
+
+                <label>
+                    Request Date
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="date"
+                    id="requestDate"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             STATIONERY ITEMS
+        ===================================================== -->
+
+        <div class="section-title" style="margin-top:25px;">
+
+            Stationery Items Requested
+            <span class="required">*</span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="items-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>
+                            Types of Stationery
+                        </th>
+
+                        <th>
+                            UOM
+                        </th>
+
+                        <th>
+                            QTY
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="itemsBody">
+
+                </tbody>
+
+            </table>
+
+        </div><br>
+
+        <div class="form-group">
+
+                <label>
+                    Remarks
+                    <span class="Remarks">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="remarks"
+                    placeholder="Your Answer"
+                >
+
+            </div>
+
+
+        <!-- =====================================================
+             BUTTONS
+        ===================================================== -->
+
+        <div class="actions">
+
+            <button
+                type="submit"
+                class="submit-btn"
+            >
+                Submit
+            </button>
+
+
+            <button
+                type="button"
+                class="admin-btn"
+                onclick="showAdminLogin()"
+            >
+                Admin Login
+            </button>
+
+        </div>
+
+
+        <div id="message"></div>
+
+    </form>
+
+</section>
+
+
+<!-- =====================================================
+     ADMIN LOGIN
+===================================================== -->
+
+<section
+    class="card admin-login hidden"
+    id="adminLogin"
+>
+
+    <h2>
+        Admin Login
+    </h2>
+
+
+    <div class="form-group">
+
+        <label>
+            Username
+        </label>
+
+        <input
+            type="text"
+            id="adminUsername"
+            placeholder="Enter Admin Username"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="adminPassword"
+            placeholder="Enter Admin Password"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            type="button"
+            class="admin-btn"
+            onclick="adminLogin()"
+        >
+            Login
+        </button>
+
+
+        <button
+            type="button"
+            class="clear-btn"
+            onclick="closeAdminLogin()"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+
+    <div
+        id="loginError"
+        class="login-error hidden"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     ADMIN PANEL
+===================================================== -->
+
+<section
+    class="card admin-panel hidden"
+    id="adminPanel"
+>
+
+    <div class="section-title">
+
+        Admin Dashboard
+
+    </div>
+
+
+    <div class="admin-info">
+
+        You are logged in as Admin.
+        Only the Admin dashboard can view,
+        export and delete submitted request data.
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            type="button"
+            class="excel-btn"
+            onclick="exportToExcel()"
+        >
+            Export to Excel
+        </button>
+
+
+        <button
+            type="button"
+            class="clear-btn"
+            onclick="clearAllData()"
+        >
+            Clear All Data
+        </button>
+
+
+        <button
+            type="button"
+            class="logout-btn"
+            onclick="adminLogout()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table class="admin-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Employee</th>
+                    <th>Emp-No</th>
+                    <th>Mobile</th>
+                    <th>Project</th>
+                    <th>Company</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Item</th>
+                    <th>UOM</th>
+                    <th>Quantity</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="adminTableBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* =====================================================
+   ADMIN LOGIN DETAILS
+===================================================== */
+
+const ADMIN_USERNAME = "admin";
+
+const ADMIN_PASSWORD = "Admin@123";
+
+
+/* =====================================================
+   GET SAVED DATA
+===================================================== */
+
+let requests =
+    JSON.parse(
+        localStorage.getItem("stationeryRequests")
+    ) || [];
+
+
+/* =====================================================
+   SET TODAY'S DATE
+===================================================== */
+
+document.getElementById("requestDate").value =
+    new Date().toISOString().split("T")[0];
+
+
+/* =====================================================
+   STATIONERY LIST
+===================================================== */
+
+const stationeryItems = [
+
+    "Binder Clip 15mm",
+    "Binder Clip 19mm",
+    "Binder Clip 25mm",
+    "Binder Clip 32mm",
+    "Binder Clip 41mm",
+
+    "Box File - Kangaro Clip",
+
+    "Brown Tape 2\"",
+
+    "Calculator Casio MJ 120 (Original)",
+
+    "Carbon Sheet Blue",
+
+    "Cello Tape 1\"",
+    "Cello Tape 2\"",
+
+    "Classmate Notebook Long Ruled 160 Page",
+
+    "Classmate Notebook Long Unruled 160 Page",
+
+    "Description",
+
+    "Double Side Tape 1\" Red",
+
+    "Dustbin 60 Ltrs - Swing -Blue,Green",
+
+    "Fevi Gum",
+    "Fevi Quick Small",
+    "Fevi Stick 15gm",
+
+    "Flair Ezee Click pen Black Color",
+    "Flair Ezee Click pen Blue Color",
+    "Flair Ezee Click pen Red Color",
+
+    "Floor Mat Medium Size",
+
+    "Garbage Bag Medium",
+
+    "Harpic 500ml",
+
+    "Highlighter Mix Color",
+
+    "Lizol 500ml",
+
+    "Marker Black Color",
+    "Marker Blue Color",
+    "Marker Green Color",
+
+    "Mop & Stick Set",
+
+    "Odonil Fresher Big Size - Jasmine Mist",
+
+    "Permanent Marker - Black",
+
+    "Post IT Pad 3X3",
+
+    "Room Spary - Godrej - mix",
+
+    "Spring File",
+
+    "Stamp Pad Ink Big Camlin Blue",
+
+    "Stamp Pad Ink Blue",
+
+    "Stapler Machine - 10D",
+
+    "Stapler Machine Big Hander HP 45",
+    
+    "Stapler Pin 24/6",
+
+    "Steel Scale",
+
+    "Steel Water Glass Big",
+
+    "Stretch Film 2 Feet",
+    
+    "Tissue Paper 200Gms Face Wash",
+
+    "Toilet Brush - Round",
+
+    "Umbrella Medium Size",
+
+    "Umbrella Small Size",
+
+    "Water Bottle 1 Ltr",
+
+    "Whisel Plastic",
+
+    "White Board Marker Black",
+    
+    "White Board Marker Blue",
+
+    "White Board Marker Green Luxur",
+
+    "White Board Marker Red",
+
+    "Other's"
+];
+
+
+/* =====================================================
+   UOM
+===================================================== */
+
+const uomOptions = [
+
+    "BOX",
+    "BUNDLE",
+    "NO's",
+    "OTHER's",
+    "PAC",
+    "PCS",
+    "PKT",
+    "ROL",
+    "SET"
+
+];
+
+
+/* =====================================================
+   CREATE 5 ITEM ROWS
+===================================================== */
+
+function createItemRows() {
+
+    const tbody =
+        document.getElementById("itemsBody");
+
+    tbody.innerHTML = "";
+
+
+    for (
+        let i = 1;
+        i <= 5;
+        i++
+    ) {
+
+        let itemOptions = "";
+
+        stationeryItems.forEach(item => {
+
+            itemOptions += `
+                <option value="${escapeHtml(item)}">
+                    ${escapeHtml(item)}
+                </option>
+            `;
+
+        });
+
+
+        let uom = "";
+
+        uomOptions.forEach(option => {
+
+            uom += `
+                <option value="${option}">
+                    ${option}
+                </option>
+            `;
+
+        });
+
+
+        let quantity = "";
+
+        for (
+            let q = 1;
+            q <= 10;
+            q++
+        ) {
+
+            quantity += `
+                <option value="${q}">
+                    ${q}
+                </option>
+            `;
+
+        }
+
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${i}
+                </td>
+
+
+                <td>
+
+                    <select class="item">
+
+                        <option value="">
+                            Choose
+                        </option>
+
+                        ${itemOptions}
+
+                    </select>
+
+                </td>
+
+
+                <td>
+
+                    <select class="uom">
+
+                        <option value="">
+                            Choose
+                        </option>
+
+                        ${uom}
+
+                    </select>
+
+                </td>
+
+
+                <td>
+
+                    <select class="qty">
+
+                        <option value="">
+                            Choose
+                        </option>
+
+                        ${quantity}
+
+                    </select>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+createItemRows();
+
+
+/* =====================================================
+   USER SUBMIT
+===================================================== */
+
+document
+    .getElementById("stationeryForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            const employee =
+                document
+                .getElementById("employeeName")
+                .value
+                .trim();
+
+
+            const empNo =
+                document
+                .getElementById("empNo")
+                .value
+                .trim();
+
+
+            const mobile =
+                document
+                .getElementById("mobile")
+                .value
+                .trim();
+
+
+            const project =
+                document
+                .getElementById("project")
+                .value;
+
+
+            const company =
+                document
+                .getElementById("company")
+                .value;
+
+
+            const department =
+                document
+                .getElementById("department")
+                .value;
+
+
+            const date =
+                document
+                .getElementById("requestDate")
+                .value;
+
+
+            const items =
+                document.querySelectorAll(".item");
+
+
+            const uoms =
+                document.querySelectorAll(".uom");
+
+
+            const quantities =
+                document.querySelectorAll(".qty");
+
+
+            let added = 0;
+
+
+            items.forEach(
+                (itemSelect, index) => {
+
+                    const item =
+                        itemSelect.value;
+
+
+                    const uom =
+                        uoms[index].value;
+
+
+                    const quantity =
+                        quantities[index].value;
+
+
+                    if (
+                        item &&
+                        uom &&
+                        quantity
+                    ) {
+
+                        requests.push({
+
+                            "Employee":
+                                employee,
+
+                            "Emp-No":
+                                empNo,
+
+                            "Mobile":
+                                mobile,
+
+                            "Project":
+                                project,
+
+                            "Company":
+                                company,
+
+                            "Department":
+                                department,
+
+                            "Date":
+                                date,
+
+                            "Item":
+                                item,
+
+                            "UOM":
+                                uom,
+
+                            "Quantity":
+                                Number(quantity)
+
+                        });
+
+
+                        added++;
+
+                    }
+
+                }
+            );
+
+
+            if (added === 0) {
+
+                showMessage(
+                    "Please select at least one stationery item, UOM and quantity.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            /*
+               SAVE DATA
+               Normal users cannot see this data
+               on the page.
+            */
+
+            localStorage.setItem(
+                "stationeryRequests",
+                JSON.stringify(requests)
+            );
+
+
+            showMessage(
+                added +
+                " stationery item(s) submitted successfully. Admin can view the request.",
+                false
+            );
+
+
+            /*
+               Clear only stationery selections.
+            */
+
+            items.forEach(
+                item => item.value = ""
+            );
+
+
+            uoms.forEach(
+                uom => uom.value = ""
+            );
+
+
+            quantities.forEach(
+                qty => qty.value = ""
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   SHOW ADMIN LOGIN
+===================================================== */
+
+function showAdminLogin() {
+
+    document
+        .getElementById("userSection")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("adminPanel")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("adminLogin")
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* =====================================================
+   CLOSE ADMIN LOGIN
+===================================================== */
+
+function closeAdminLogin() {
+
+    document
+        .getElementById("adminLogin")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("userSection")
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
+
+function adminLogin() {
+
+    const username =
+        document
+        .getElementById("adminUsername")
+        .value
+        .trim();
+
+
+    const password =
+        document
+        .getElementById("adminPassword")
+        .value;
+
+
+    const loginError =
+        document
+        .getElementById("loginError");
+
+
+    if (
+        username === ADMIN_USERNAME &&
+        password === ADMIN_PASSWORD
+    ) {
+
+        /*
+           Store login status for this browser tab.
+        */
+
+        sessionStorage.setItem(
+            "adminLoggedIn",
+            "true"
+        );
+
+
+        document
+            .getElementById("adminLogin")
+            .classList
+            .add("hidden");
+
+
+        document
+            .getElementById("userSection")
+            .classList
+            .add("hidden");
+
+
+        document
+            .getElementById("adminPanel")
+            .classList
+            .remove("hidden");
+
+
+        loginError.classList.add("hidden");
+
+
+        renderAdminData();
+
+    }
+
+    else {
+
+        loginError.textContent =
+            "Invalid Admin Username or Password.";
+
+        loginError.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DISPLAY ADMIN DATA
+===================================================== */
+
+function renderAdminData() {
+
+    const tbody =
+        document
+        .getElementById("adminTableBody");
+
+
+    tbody.innerHTML = "";
+
+
+    if (requests.length === 0) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    style="text-align:center;"
+                >
+                    No requests found.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    requests.forEach(request => {
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${escapeHtml(request["Employee"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Emp-No"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Mobile"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Project"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Company"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Department"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Date"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["Item"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(request["UOM"])}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        String(request["Quantity"])
+                    )}
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+/* =====================================================
+   EXPORT EXCEL
+===================================================== */
+
+function exportToExcel() {
+
+    /*
+       Check Admin Login
+    */
+
+    if (
+        sessionStorage.getItem(
+            "adminLoggedIn"
+        ) !== "true"
+    ) {
+
+        alert(
+            "Only Admin can export Excel data."
+        );
+
+        return;
+
+    }
+
+
+    if (requests.length === 0) {
+
+        alert(
+            "No saved requests found."
+        );
+
+        return;
+
+    }
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            requests
+        );
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Stationery Requests"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "Stationery_Requests.xlsx"
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR DATA
+===================================================== */
+
+function clearAllData() {
+
+    /*
+       Only Admin
+    */
+
+    if (
+        sessionStorage.getItem(
+            "adminLoggedIn"
+        ) !== "true"
+    ) {
+
+        alert(
+            "Only Admin can delete data."
+        );
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            "Are you sure you want to delete ALL stationery requests?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    requests = [];
+
+
+    localStorage.removeItem(
+        "stationeryRequests"
+    );
+
+
+    renderAdminData();
+
+
+    alert(
+        "All stationery request data has been deleted."
+    );
+
+}
+
+
+/* =====================================================
+   ADMIN LOGOUT
+===================================================== */
+
+function adminLogout() {
+
+    sessionStorage.removeItem(
+        "adminLoggedIn"
+    );
+
+
+    document
+        .getElementById("adminPanel")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("adminLogin")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("userSection")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById("adminUsername")
+        .value = "";
+
+
+    document
+        .getElementById("adminPassword")
+        .value = "";
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+    message,
+    error = false
+) {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+
+    box.style.background =
+        error
+        ? "#fee2e2"
+        : "#eaf7ee";
+
+
+    box.style.color =
+        error
+        ? "#991b1b"
+        : "#166534";
+
+}
+
+
+/* =====================================================
+   HTML SECURITY
+===================================================== */
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+</html>
