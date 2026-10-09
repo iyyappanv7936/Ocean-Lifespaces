@@ -635,9 +635,10 @@
 
             <div class="admin-info">
 
-                You are logged in as Admin.
-                Only the Admin dashboard can view,
-                export and delete submitted request data.
+                You are logged in as the single Admin.
+                Data submitted from all mobiles and laptops is stored
+                in one shared online database. Only Admin can view,
+                export and delete the submitted request data.
 
             </div>
 
@@ -645,7 +646,7 @@
             <div class="actions">
 
                 <button type="button" class="excel-btn" onclick="exportToExcel()">
-                    Export to Excel
+                    Download Excel
                 </button>
 
 
@@ -709,14 +710,10 @@
         const ADMIN_PASSWORD = "Admin@123";
 
 
-        /* =====================================================
-           GET SAVED DATA
-        ===================================================== */
 
-        let requests =
-            JSON.parse(
-                localStorage.getItem("stationeryRequests")
-            ) || [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbw0K1evJYcgvRrG4al59--Z8q3Muj3Aldg5tonEfOIIOcW3adrxJCNMOXLteHvDN0bF/exec";
+        let requests = [];
+        let adminToken = sessionStorage.getItem("adminToken") || "";
 
 
         /* =====================================================
@@ -986,7 +983,7 @@
             .getElementById("stationeryForm")
             .addEventListener(
                 "submit",
-                function (event) {
+                async function (event) {
 
                     event.preventDefault();
 
@@ -1128,16 +1125,44 @@
 
 
                     /*
-                       SAVE DATA
-                       Normal users cannot see this data
-                       on the page.
+                       SAVE DATA TO THE SHARED ONLINE DATABASE.
+                       Every mobile/laptop sends data to the same
+                       Google Sheet.
                     */
 
-                    localStorage.setItem(
-                        "stationeryRequests",
-                        JSON.stringify(requests)
-                    );
+                    try {
+                        if (!API_URL || API_URL.includes("PASTE_YOUR_")) {
+                            showMessage(
+                                "Please configure the Google Apps Script API URL first.",
+                                true
+                            );
+                            return;
+                        }
 
+                        const response = await fetch(API_URL, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "text/plain;charset=utf-8"
+                            },
+                            body: JSON.stringify({
+                                action: "submit",
+                                records: requests.slice(-added)
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (!result.success) {
+                            throw new Error(result.message || "Submission failed.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showMessage(
+                            "Unable to save the request online. Please check your internet connection and try again.",
+                            true
+                        );
+                        return;
+                    }
 
                     showMessage(
                         added +
@@ -1238,218 +1263,176 @@
            ADMIN LOGIN
         ===================================================== */
 
-        function adminLogin() {
+        async function adminLogin() {
 
             const username =
-                document
-                    .getElementById("adminUsername")
-                    .value
-                    .trim();
-
+                document.getElementById("adminUsername").value.trim();
 
             const password =
-                document
-                    .getElementById("adminPassword")
-                    .value;
-
+                document.getElementById("adminPassword").value;
 
             const loginError =
-                document
-                    .getElementById("loginError");
+                document.getElementById("loginError");
 
+            if (!API_URL || API_URL.includes("PASTE_YOUR_")) {
+                loginError.textContent =
+                    "Please configure the Google Apps Script API URL first.";
+                loginError.classList.remove("hidden");
+                return;
+            }
 
-            if (
-                username === ADMIN_USERNAME &&
-                password === ADMIN_PASSWORD
-            ) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        action: "login",
+                        username: username,
+                        password: password
+                    })
+                });
 
-                /*
-                   Store login status for this browser tab.
-                */
+                const result = await response.json();
 
-                sessionStorage.setItem(
-                    "adminLoggedIn",
-                    "true"
-                );
+                if (!result.success) {
+                    loginError.textContent =
+                        result.message || "Invalid Admin Username or Password.";
+                    loginError.classList.remove("hidden");
+                    return;
+                }
 
+                adminToken = result.token;
+                sessionStorage.setItem("adminToken", adminToken);
 
-                document
-                    .getElementById("adminLogin")
-                    .classList
-                    .add("hidden");
+                document.getElementById("adminLogin")
+                    .classList.add("hidden");
 
+                document.getElementById("userSection")
+                    .classList.add("hidden");
 
-                document
-                    .getElementById("userSection")
-                    .classList
-                    .add("hidden");
-
-
-                document
-                    .getElementById("adminPanel")
-                    .classList
-                    .remove("hidden");
-
+                document.getElementById("adminPanel")
+                    .classList.remove("hidden");
 
                 loginError.classList.add("hidden");
 
+                await loadAdminData();
 
-                renderAdminData();
-
-            }
-
-            else {
-
+            } catch (error) {
+                console.error(error);
                 loginError.textContent =
-                    "Invalid Admin Username or Password.";
-
-                loginError.classList.remove(
-                    "hidden"
-                );
-
+                    "Login failed. Check the internet connection and API URL.";
+                loginError.classList.remove("hidden");
             }
-
         }
 
 
         /* =====================================================
-           DISPLAY ADMIN DATA
+           LOAD / DISPLAY ADMIN DATA FROM SHARED DATABASE
         ===================================================== */
 
-        function renderAdminData() {
+        async function loadAdminData() {
+
+            if (!adminToken) {
+                alert("Please login as Admin.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        action: "getData",
+                        token: adminToken
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    sessionStorage.removeItem("adminToken");
+                    adminToken = "";
+                    alert(result.message || "Admin session expired.");
+                    adminLogout();
+                    return;
+                }
+
+                requests = result.records || [];
+                renderAdminTable();
+
+            } catch (error) {
+                console.error(error);
+                alert("Unable to load shared data.");
+            }
+        }
+
+        function renderAdminTable() {
 
             const tbody =
-                document
-                    .getElementById("adminTableBody");
-
+                document.getElementById("adminTableBody");
 
             tbody.innerHTML = "";
 
-
             if (requests.length === 0) {
-
                 tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="10"
-                    style="text-align:center;"
-                >
-                    No requests found.
-                </td>
-
-            </tr>
-
-        `;
-
+                    <tr>
+                        <td colspan="10" style="text-align:center;">
+                            No requests found.
+                        </td>
+                    </tr>
+                `;
                 return;
-
             }
-
 
             requests.forEach(request => {
 
                 tbody.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${escapeHtml(request["Employee"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Emp-No"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Mobile"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Project"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Company"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Department"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Date"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["Item"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(request["UOM"])}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                    String(request["Quantity"])
-                )}
-                </td>
-
-            </tr>
-
-        `;
+                    <tr>
+                        <td>${escapeHtml(request["Employee"] || "")}</td>
+                        <td>${escapeHtml(request["Emp-No"] || "")}</td>
+                        <td>${escapeHtml(request["Mobile"] || "")}</td>
+                        <td>${escapeHtml(request["Project"] || "")}</td>
+                        <td>${escapeHtml(request["Company"] || "")}</td>
+                        <td>${escapeHtml(request["Department"] || "")}</td>
+                        <td>${escapeHtml(request["Date"] || "")}</td>
+                        <td>${escapeHtml(request["Item"] || "")}</td>
+                        <td>${escapeHtml(request["UOM"] || "")}</td>
+                        <td>${escapeHtml(String(request["Quantity"] ?? ""))}</td>
+                    </tr>
+                `;
 
             });
-
         }
 
 
         /* =====================================================
            EXPORT EXCEL
+           Only the single Admin account can download.
         ===================================================== */
 
-        function exportToExcel() {
+        async function exportToExcel() {
 
-            /*
-               Check Admin Login
-            */
-
-            if (
-                sessionStorage.getItem(
-                    "adminLoggedIn"
-                ) !== "true"
-            ) {
-
-                alert(
-                    "Only Admin can export Excel data."
-                );
-
+            if (!adminToken) {
+                alert("Only Admin can export Excel data.");
                 return;
-
             }
 
+            await loadAdminData();
 
             if (requests.length === 0) {
-
-                alert(
-                    "No saved requests found."
-                );
-
+                alert("No saved requests found.");
                 return;
-
             }
 
-
             const worksheet =
-                XLSX.utils.json_to_sheet(
-                    requests
-                );
-
+                XLSX.utils.json_to_sheet(requests);
 
             const workbook =
                 XLSX.utils.book_new();
-
 
             XLSX.utils.book_append_sheet(
                 workbook,
@@ -1457,12 +1440,10 @@
                 "Stationery Requests"
             );
 
-
             XLSX.writeFile(
                 workbook,
                 "Stationery_Requests.xlsx"
             );
-
         }
 
 
@@ -1470,53 +1451,50 @@
            CLEAR DATA
         ===================================================== */
 
-        function clearAllData() {
+        async function clearAllData() {
 
-            /*
-               Only Admin
-            */
-
-            if (
-                sessionStorage.getItem(
-                    "adminLoggedIn"
-                ) !== "true"
-            ) {
-
-                alert(
-                    "Only Admin can delete data."
-                );
-
+            if (!adminToken) {
+                alert("Only Admin can delete data.");
                 return;
-
             }
-
 
             const confirmation =
                 confirm(
                     "Are you sure you want to delete ALL stationery requests?"
                 );
 
-
             if (!confirmation) {
                 return;
             }
 
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        action: "clearData",
+                        token: adminToken
+                    })
+                });
 
-            requests = [];
+                const result = await response.json();
 
+                if (!result.success) {
+                    alert(result.message || "Unable to delete data.");
+                    return;
+                }
 
-            localStorage.removeItem(
-                "stationeryRequests"
-            );
+                requests = [];
+                renderAdminTable();
 
+                alert("All stationery request data has been deleted.");
 
-            renderAdminData();
-
-
-            alert(
-                "All stationery request data has been deleted."
-            );
-
+            } catch (error) {
+                console.error(error);
+                alert("Unable to delete shared data.");
+            }
         }
 
 
@@ -1526,9 +1504,8 @@
 
         function adminLogout() {
 
-            sessionStorage.removeItem(
-                "adminLoggedIn"
-            );
+            sessionStorage.removeItem("adminToken");
+            adminToken = "";
 
 
             document
