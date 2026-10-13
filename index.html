@@ -1,3772 +1,753 @@
 <!DOCTYPE html>
-<!-- saved from url=(0032)http://127.0.0.1:5500/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Lifespaces - Stationery Management System</title>
 
-    <title>Stationery Management System</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
-    <!-- Excel Library -->
-    <script src="./excel error_files/xlsx.full.min.js.download"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f9;
-            color: #27364b;
-        }
-
-        /* ================= HEADER ================= */
-
-        .header {
-            background: rgb(192, 182, 182);
-            color: white;
-            padding: 25px 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 42px;
-            padding: 0 25px 40px;
-        }
-
-        .header .container {
-            padding-bottom: 0;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        .title {
-            color: #053170;
-            position: absolute;
-            /* top: 60px;
-    right : 50px; */
-
-        }
-
-        .subtitle {
-            margin: 8px 0 0;
-            font-size: 16px;
-            opacity: 0.85;
-            color: red;
-        }
-
-        /* ================= CARD ================= */
-
-        .card {
-            background: white;
-            margin-top: 25px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .section-title {
-            font-size: 21px;
-            font-weight: bold;
-            margin-bottom: 22px;
-        }
-
-        /* ================= THREE COLUMN ================= */
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .required {
-            color: red;
-        }
-
-        input,
-        select {
-            width: 100%;
-            height: 43px;
-            border: 1px solid #b9c0c8;
-            border-radius: 5px;
-            padding: 0 11px;
-            font-size: 15px;
-            background: white;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #26364d;
-            box-shadow: 0 0 0 2px rgba(38, 54, 77, 0.12);
-        }
-
-        /* ================= ITEMS TABLE ================= */
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            min-width: 700px;
-        }
-
-        .items-table th,
-        .items-table td {
-            border: 1px solid #c7ced8;
-            padding: 8px;
-        }
-
-        .items-table th {
-            background: #e8edf5;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        .items-table td:first-child {
-            width: 50px;
-            text-align: center;
-            background: #eef2f8;
-            font-weight: bold;
-        }
-
-        .items-table select {
-            height: 40px;
-        }
-
-        /* ================= BUTTONS ================= */
-
-        .actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            border: 0;
-            border-radius: 5px;
-            padding: 12px 20px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .submit-btn {
-            background: #26364d;
-            color: white;
-        }
-
-        .admin-btn {
-            background: #6d28d9;
-            color: white;
-        }
-
-        .excel-btn {
-            background: #217346;
-            color: white;
-        }
-
-        .clear-btn {
-            background: #e5e7eb;
-            color: #26364d;
-        }
-
-        .logout-btn {
-            background: #dc2626;
-            color: white;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        /* ================= MESSAGE ================= */
-
-        #message {
-            display: none;
-            margin-top: 18px;
-            padding: 13px;
-            border-radius: 5px;
-        }
-
-        /* ================= ADMIN LOGIN ================= */
-
-        .admin-login {
-            max-width: 450px;
-            margin: 30px auto;
-        }
-
-        .admin-login h2 {
-            margin-top: 0;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .login-error {
-            margin-top: 15px;
-            padding: 10px;
-            color: #991b1b;
-            background: #fee2e2;
-            border-radius: 5px;
-        }
-
-        /* ================= ADMIN TABLE ================= */
-
-        .admin-panel {
-            margin-top: 25px;
-        }
-
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 13px;
-            min-width: 1100px;
-        }
-
-        .admin-table th,
-        .admin-table td {
-            border: 1px solid #d1d5db;
-            padding: 9px;
-            text-align: left;
-        }
-
-        .admin-table th {
-            background: #e8edf5;
-        }
-
-        .admin-info {
-            background: #eaf7ee;
-            color: #166534;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-
-        /* ================= MOBILE ================= */
-
-        @media (max-width: 850px) {
-
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .container {
-                padding: 0 15px 30px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 26px;
-            }
-
-        }
-    </style>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#27364b}
+header{background:#c0b6b6;padding:18px 25px;display:flex;align-items:center;gap:20px}
+header img{width:100px;max-height:85px;object-fit:contain}
+h1{margin:0;color:#053170;font-size:clamp(20px,3vw,32px)}
+.subtitle{color:red;margin:7px 0 0}
+.container{max-width:1400px;margin:25px auto;padding:0 20px 40px}
+.card{background:white;padding:25px;border-radius:10px;box-shadow:0 3px 12px #0001;margin-bottom:22px}
+.section-title{font-size:21px;font-weight:bold;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 18px}
+.group{margin-bottom:18px}
+label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
+.required{color:red}
+input,select{width:100%;height:43px;border:1px solid #b9c0c8;border-radius:5px;padding:0 10px;font-size:15px;background:white;color:#27364b}
+input:focus,select:focus{outline:2px solid #26364d22;border-color:#26364d}
+.table-wrap{overflow:auto;width:100%}
+table{border-collapse:collapse;width:100%}
+.items-table{min-width:680px}
+th,td{border:1px solid #c7ced8;padding:9px;text-align:left}
+th{background:#e8edf5}
+.items-table td:first-child{text-align:center;background:#eef2f8;font-weight:bold}
+.items-table select{height:39px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+button{border:0;border-radius:5px;padding:12px 18px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+.submit{background:#26364d;color:white}
+.admin-btn{background:#6d28d9;color:white}
+.excel-btn{background:#217346;color:white}
+.clear-btn{background:#e5e7eb;color:#26364d}
+.logout-btn{background:#dc2626;color:white}
+#message{display:none;margin-top:15px;padding:12px;border-radius:5px}
+.hidden{display:none!important}
+.login{max-width:450px;margin:25px auto}
+.error{background:#fee2e2;color:#991b1b;padding:10px;margin-top:12px;border-radius:5px}
+.info{background:#eaf7ee;color:#166534;padding:12px;border-radius:5px;margin:12px 0}
+.admin-table{min-width:1200px;font-size:13px;margin-top:16px}
+.admin-table td{overflow-wrap:anywhere}
+.admin-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.admin-search{max-width:400px;margin-top:15px}
+.count{font-weight:bold;margin-top:12px}
+#adminPanel.fullscreen{position:fixed;inset:0;z-index:9999;margin:0;width:100vw;height:100dvh;max-width:none;overflow:auto;border-radius:0;padding:20px;background:white}
+#adminPanel.fullscreen .table-wrap{max-height:calc(100dvh - 270px);overflow:auto}
+#adminPanel.fullscreen th{position:sticky;top:0;z-index:2}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ header{padding:15px;gap:12px}
+ header img{width:65px}
+ .container{padding:0 12px 25px}
+ .card{padding:16px}
+ .grid{grid-template-columns:1fr}
+ #adminPanel.fullscreen{padding:12px}
+ #adminPanel.fullscreen .table-wrap{max-height:calc(100dvh - 320px)}
+}
+</style>
 </head>
 
 <body>
 
-    <!-- =====================================================
-     HEADER
-===================================================== -->
+<header>
+<img src="Logo.jpeg" alt="Ocean Lifespaces Logo" onerror="this.style.display='none'">
+<div>
+<h1>Ocean Lifespaces India Private Limited</h1>
+<p class="subtitle">Stationery Management System</p>
+</div>
+</header>
+
+<main class="container">
+
+<section class="card" id="userSection">
+<div class="section-title">Stationery Request Form</div>
+
+<form id="stationeryForm">
+<div class="grid">
+
+<div class="group">
+<label for="project">Name Of The Project <span class="required">*</span></label>
+<select id="project" required>
+<option value="">Choose</option>
+<option>Ctrls-Kochi</option>
+<option>EY-Global Kochi</option>
+</select>
+</div>
+
+<div class="group">
+<label for="company">Company <span class="required">*</span></label>
+<select id="company" required>
+<option value="">Choose</option>
+<option>Ocean Lifespaces</option>
+</select>
+</div>
+
+<div class="group">
+<label for="employeeName">Employee Name <span class="required">*</span></label>
+<input id="employeeName" required maxlength="120" placeholder="Your Answer">
+</div>
+
+<div class="group">
+<label for="empNo">Emp-No <span class="required">*</span></label>
+<input id="empNo" required maxlength="50" placeholder="Your Answer">
+</div>
+
+<div class="group">
+<label for="mobile">Mobile Number <span class="required">*</span></label>
+<input id="mobile" type="tel" required pattern="[0-9+() -]{10,18}" maxlength="18" placeholder="Your Answer">
+</div>
+
+<div class="group">
+<label for="department">Department <span class="required">*</span></label>
+<select id="department" required>
+<option value="">Choose</option>
+<option>Administration</option>
+<option>Compliances</option>
+<option>EHS &amp; Safety</option>
+<option>HR</option>
+<option>IT</option>
+<option>MEP</option>
+<option>OHC</option>
+<option>P&amp;M</option>
+<option>Planning &amp; Documents</option>
+<option>Project</option>
+<option>QS &amp; Billing</option>
+<option>Quality(QA QC)</option>
+<option>Security Team</option>
+<option>Site Execution</option>
+<option>Store</option>
+<option>Survey</option>
+<option>Other's</option>
+</select>
+</div>
+
+<div class="group">
+    <label for="requestDate">
+        Request Date <span class="required">*</span>
+    </label>
+    <input
+        type="text"
+        id="requestDate"
+        placeholder="DD-MM-YYYY"
+        required
+        readonly
+    >
+</div>
+
+</div>
+
+<div class="section-title" style="margin-top:22px">
+Stationery Items Requested <span class="required">*</span>
+</div>
+
+<div class="table-wrap">
+<table class="items-table">
+<thead>
+<tr><th>#</th><th>Types of Stationery</th><th>UOM</th><th>QTY</th></tr>
+</thead>
+<tbody id="itemsBody"></tbody>
+</table>
+</div>
+
+<div class="group" style="margin-top:18px">
+<label for="remarks">Remarks</label>
+<input id="remarks" maxlength="500" placeholder="Optional remarks">
+</div>
+
+<div class="actions">
+<button class="submit" id="submitBtn" type="submit">Submit</button>
+<button class="admin-btn" type="button" onclick="showAdminLogin()">Admin Login</button>
+</div>
+
+<div id="message" role="status" aria-live="polite"></div>
+</form>
+</section>
+
+<section class="card login hidden" id="adminLogin">
+<h2>Admin Login</h2>
+
+<div class="group">
+<label for="adminUsername">Username</label>
+<input id="adminUsername" autocomplete="username" placeholder="Admin username">
+</div>
+
+<div class="group">
+<label for="adminPassword">Password</label>
+<input id="adminPassword" type="password" autocomplete="current-password" placeholder="Admin password">
+</div>
+
+<div class="actions">
+<button class="admin-btn" type="button" onclick="adminLogin()">Login</button>
+<button class="clear-btn" type="button" onclick="closeAdminLogin()">Cancel</button>
+</div>
+
+<div id="loginError" class="error hidden"></div>
+</section>
+
+<section class="card hidden" id="adminPanel">
+<div class="admin-top">
+<div class="section-title">Admin Dashboard</div>
+<button class="clear-btn" type="button" onclick="toggleFullscreen()">Exit Full Screen</button>
+</div>
+
+<div class="info">
+All users must submit through the shared Google Apps Script backend.
+Admin can refresh, search, export and clear the shared records.
+</div>
+
+<div class="actions">
+<button class="excel-btn" type="button" onclick="exportToExcel()">Download All Data (Excel)</button>
+<button class="clear-btn" type="button" onclick="loadAdminData()">Refresh Data</button>
+<button class="clear-btn" type="button" onclick="clearAllData()">Clear All Data</button>
+<button class="logout-btn" type="button" onclick="adminLogout()">Logout</button>
+</div>
+
+<div class="admin-search">
+<input id="adminSearch" type="search" placeholder="Search all records..." oninput="renderAdminTable()">
+</div>
+
+<div class="count" id="recordCount">Records: 0</div>
+
+<div class="table-wrap">
+<table class="admin-table">
+<thead>
+<tr>
+<th>Employee</th><th>Emp-No</th><th>Mobile</th><th>Project</th>
+<th>Company</th><th>Department</th><th>Date</th><th>Item</th>
+<th>UOM</th><th>Quantity</th><th>Remarks</th>
+</tr>
+</thead>
+<tbody id="adminTableBody">
+<tr><td colspan="11">Log in and refresh to load records.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+</main>
 
-    <header class="header">
-
-        <div class="container">
-
-            <img src="./excel error_files/Logo.jpeg" alt="image" width="15%">
-
-            <div class="title">
-                <h1>Ocean Lifespaces India private limited</h1>
-                <p class="subtitle">
-                    Stationery Management System
-                </p>
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- =====================================================
-     USER FORM
-===================================================== -->
-
-    <main class="container">
-
-        <section class="card hidden" id="userSection">
-
-            <div class="section-title">
-                Stationery Request Form
-            </div>
-
-
-            <form id="stationeryForm">
-
-                <!-- ================= THREE COLUMN FORM ================= -->
-
-                <div class="form-grid">
-
-                    <!-- PROJECT -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Name Of The Project
-                            <span class="required">*</span>
-                        </label>
-
-                        <select id="project" required="">
-
-                            <option value="">
-                                Choose
-                            </option>
-
-                            <option value="Ctrls-Kochi">
-                                Ctrls-Kochi
-                            </option>
-
-                            <option value="EY-Global Kochi">
-                                EY-Global Kochi
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- COMPANY -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Company
-                            <span class="required">*</span>
-                        </label>
-
-                        <select id="company" required="">
-
-                            <option value="">
-                                Choose
-                            </option>
-
-                            <option value="Ocean Lifespaces">
-                                Ocean Lifespaces
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- EMPLOYEE NAME -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Employee Name
-                            <span class="required">*</span>
-                        </label>
-
-                        <input type="text" id="employeeName" placeholder="Your Answer" required="">
-
-                    </div>
-
-
-                    <!-- EMPLOYEE NUMBER -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Emp-No
-                            <span class="required">*</span>
-                        </label>
-
-                        <input type="text" id="empNo" placeholder="Your Answer" required="">
-
-                    </div>
-
-
-                    <!-- MOBILE -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Mobile Number
-                            <span class="required">*</span>
-                        </label>
-
-                        <input type="tel" id="mobile" placeholder="Your Answer" required="">
-
-                    </div>
-
-
-                    <!-- DEPARTMENT -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Department
-                            <span class="required">*</span>
-                        </label>
-
-                        <select id="department" required="">
-
-                            <option value="">
-                                Choose
-                            </option>
-
-                            <option>Administration</option>
-                            <option>Compliances</option>
-                            <option>EHS &amp; Safety</option>
-                            <option>HR</option>
-                            <option>IT</option>
-                            <option>MEP</option>
-                            <option>OHC</option>
-                            <option>P&amp;M</option>
-                            <option>Planning &amp; Documents</option>
-                            <option>Project</option>
-                            <option>QS &amp; Billing</option>
-                            <option>Quality(QA QC)</option>
-                            <option>Security Team</option>
-                            <option>Site Execution</option>
-                            <option>Store</option>
-                            <option>Survey</option>
-                            <option>Other's</option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- DATE -->
-
-                    <div class="form-group">
-
-                        <label>
-                            Request Date
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="requestDate"
-                            placeholder="DD-MM-YYYY"
-                            maxlength="10"
-                            pattern="(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-[0-9]{4}"
-                            title="Enter a valid date in DD-MM-YYYY format, for example 13-10-2026"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <!-- =====================================================
-             STATIONERY ITEMS
-        ===================================================== -->
-
-                <div class="section-title" style="margin-top:25px;">
-
-                    Stationery Items Requested
-                    <span class="required">*</span>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table class="items-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>#</th>
-
-                                <th>
-                                    Types of Stationery
-                                </th>
-
-                                <th>
-                                    UOM
-                                </th>
-
-                                <th>
-                                    QTY
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="itemsBody">
-
-            <tr>
-
-                <td>
-                    1
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="A3 Envelop Cover Ocean">
-                    A3 Envelop Cover Ocean
-                </option>
-            
-                <option value="A4 Envelop Cover Ocean">
-                    A4 Envelop Cover Ocean
-                </option>
-            
-                <option value="Binder Clip -15 MM">
-                    Binder Clip -15 MM
-                </option>
-            
-                <option value="Binder Clip -19 MM">
-                    Binder Clip -19 MM
-                </option>
-            
-                <option value="Binder Clip -25MM">
-                    Binder Clip -25MM
-                </option>
-            
-                <option value="Binder Clip -32MM">
-                    Binder Clip -32MM
-                </option>
-            
-                <option value="Binder Clip -41MM">
-                    Binder Clip -41MM
-                </option>
-            
-                <option value="Black Pen">
-                    Black Pen
-                </option>
-            
-                <option value="Blue Pen">
-                    Blue Pen
-                </option>
-            
-                <option value="Box File – (Medium Size)">
-                    Box File – (Medium Size)
-                </option>
-            
-                <option value="Calculator Basic Business (For , Planning)">
-                    Calculator Basic Business (For , Planning)
-                </option>
-            
-                <option value="Carbon Sheet Blue">
-                    Carbon Sheet Blue
-                </option>
-            
-                <option value="CD Marker Black (Safety)">
-                    CD Marker Black (Safety)
-                </option>
-            
-                <option value="CD Marker Blue (Safety)">
-                    CD Marker Blue (Safety)
-                </option>
-            
-                <option value="CD Marker Green (Safety)">
-                    CD Marker Green (Safety)
-                </option>
-            
-                <option value="Celotape -Small">
-                    Celotape -Small
-                </option>
-            
-                <option value="Double Sided Tape (3-MM)">
-                    Double Sided Tape (3-MM)
-                </option>
-            
-                <option value="Drinking water Glass Medium Size">
-                    Drinking water Glass Medium Size
-                </option>
-            
-                <option value="Dust bin-big ( blue )">
-                    Dust bin-big ( blue )
-                </option>
-            
-                <option value="Dust bin-big ( Green )">
-                    Dust bin-big ( Green )
-                </option>
-            
-                <option value="Dustbin-Office Close type">
-                    Dustbin-Office Close type
-                </option>
-            
-                <option value="Fevistic">
-                    Fevistic
-                </option>
-            
-                <option value="Flate File">
-                    Flate File
-                </option>
-            
-                <option value="Flex kwik">
-                    Flex kwik
-                </option>
-            
-                <option value="Floor Mate">
-                    Floor Mate
-                </option>
-            
-                <option value="Floor mop">
-                    Floor mop
-                </option>
-            
-                <option value="GARBAGE BAG ( Medium size )(Office Use )">
-                    GARBAGE BAG ( Medium size )(Office Use )
-                </option>
-            
-                <option value="Gum">
-                    Gum
-                </option>
-            
-                <option value="Harpic">
-                    Harpic
-                </option>
-            
-                <option value="Highlighter - multicolor">
-                    Highlighter - multicolor
-                </option>
-            
-                <option value="Inward Stamp">
-                    Inward Stamp
-                </option>
-            
-                <option value="Lyzal">
-                    Lyzal
-                </option>
-            
-                <option value="Marker for White board luxor (Black)">
-                    Marker for White board luxor (Black)
-                </option>
-            
-                <option value="Marker for White board luxor (blue)">
-                    Marker for White board luxor (blue)
-                </option>
-            
-                <option value="Marker for White board luxor (Red)">
-                    Marker for White board luxor (Red)
-                </option>
-            
-                <option value="Marker for White board luxor(Green)">
-                    Marker for White board luxor(Green)
-                </option>
-            
-                <option value="Ocean Round Stamp -Chennai address">
-                    Ocean Round Stamp -Chennai address
-                </option>
-            
-                <option value="Ocean Round Stamp -Kochi">
-                    Ocean Round Stamp -Kochi
-                </option>
-            
-                <option value="odonil jasmine mist">
-                    odonil jasmine mist
-                </option>
-            
-                <option value="Out ward Stamp">
-                    Out ward Stamp
-                </option>
-            
-                <option value="Packing Tape -2''inch Brown">
-                    Packing Tape -2''inch Brown
-                </option>
-            
-                <option value="Packing Tape -2''inch cello">
-                    Packing Tape -2''inch cello
-                </option>
-            
-                <option value="Penholder">
-                    Penholder
-                </option>
-            
-                <option value="Permenent marker">
-                    Permenent marker
-                </option>
-            
-                <option value="Pencil HP">
-                    Pencil HP
-                </option>
-            
-                <option value="RED Pen">
-                    RED Pen
-                </option>
-            
-                <option value="Register - 3no.s (Safety)">
-                    Register - 3no.s (Safety)
-                </option>
-            
-                <option value="Room spray multi flavour">
-                    Room spray multi flavour
-                </option>
-            
-                <option value="Scale (steel)-30cm">
-                    Scale (steel)-30cm
-                </option>
-            
-                <option value="Stamp Pad Big">
-                    Stamp Pad Big
-                </option>
-            
-                <option value="Stamp Pad ink">
-                    Stamp Pad ink
-                </option>
-            
-                <option value="Stamp Pad Small">
-                    Stamp Pad Small
-                </option>
-            
-                <option value="Stapler Big">
-                    Stapler Big
-                </option>
-            
-                <option value="Stapler Pin Big">
-                    Stapler Pin Big
-                </option>
-            
-                <option value="Stapler Pin Small (Full Box )">
-                    Stapler Pin Small (Full Box )
-                </option>
-            
-                <option value="Stapler Small">
-                    Stapler Small
-                </option>
-            
-                <option value="Sticky notes">
-                    Sticky notes
-                </option>
-            
-                <option value="Stretch film roll - 2 Feet (Packing Purpose)">
-                    Stretch film roll - 2 Feet (Packing Purpose)
-                </option>
-            
-                <option value="Tissue paper PKT">
-                    Tissue paper PKT
-                </option>
-            
-                <option value="Umberla ( Small Size )">
-                    Umberla ( Small Size )
-                </option>
-            
-                <option value="Umberla (Medium size )">
-                    Umberla (Medium size )
-                </option>
-            
-                <option value="Water Bottle 1 ltr">
-                    Water Bottle 1 ltr
-                </option>
-            
-                <option value="Whistle">
-                    Whistle
-                </option>
-            
-                <option value="Writing Pad">
-                    Writing Pad
-                </option>
-            
-                <option value="Other's">
-                    Other's
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="BOX">
-                    BOX
-                </option>
-            
-                <option value="BUNDLE">
-                    BUNDLE
-                </option>
-            
-                <option value="NO's">
-                    NO's
-                </option>
-            
-                <option value="OTHER's">
-                    OTHER's
-                </option>
-            
-                <option value="PAC">
-                    PAC
-                </option>
-            
-                <option value="PCS">
-                    PCS
-                </option>
-            
-                <option value="PKT">
-                    PKT
-                </option>
-            
-                <option value="ROL">
-                    ROL
-                </option>
-            
-                <option value="SET">
-                    SET
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="1">
-                    1
-                </option>
-            
-                <option value="2">
-                    2
-                </option>
-            
-                <option value="3">
-                    3
-                </option>
-            
-                <option value="4">
-                    4
-                </option>
-            
-                <option value="5">
-                    5
-                </option>
-            
-                <option value="6">
-                    6
-                </option>
-            
-                <option value="7">
-                    7
-                </option>
-            
-                <option value="8">
-                    8
-                </option>
-            
-                <option value="9">
-                    9
-                </option>
-            
-                <option value="10">
-                    10
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        
-
-            <tr>
-
-                <td>
-                    2
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="A3 Envelop Cover Ocean">
-                    A3 Envelop Cover Ocean
-                </option>
-            
-                <option value="A4 Envelop Cover Ocean">
-                    A4 Envelop Cover Ocean
-                </option>
-            
-                <option value="Binder Clip -15 MM">
-                    Binder Clip -15 MM
-                </option>
-            
-                <option value="Binder Clip -19 MM">
-                    Binder Clip -19 MM
-                </option>
-            
-                <option value="Binder Clip -25MM">
-                    Binder Clip -25MM
-                </option>
-            
-                <option value="Binder Clip -32MM">
-                    Binder Clip -32MM
-                </option>
-            
-                <option value="Binder Clip -41MM">
-                    Binder Clip -41MM
-                </option>
-            
-                <option value="Black Pen">
-                    Black Pen
-                </option>
-            
-                <option value="Blue Pen">
-                    Blue Pen
-                </option>
-            
-                <option value="Box File – (Medium Size)">
-                    Box File – (Medium Size)
-                </option>
-            
-                <option value="Calculator Basic Business (For , Planning)">
-                    Calculator Basic Business (For , Planning)
-                </option>
-            
-                <option value="Carbon Sheet Blue">
-                    Carbon Sheet Blue
-                </option>
-            
-                <option value="CD Marker Black (Safety)">
-                    CD Marker Black (Safety)
-                </option>
-            
-                <option value="CD Marker Blue (Safety)">
-                    CD Marker Blue (Safety)
-                </option>
-            
-                <option value="CD Marker Green (Safety)">
-                    CD Marker Green (Safety)
-                </option>
-            
-                <option value="Celotape -Small">
-                    Celotape -Small
-                </option>
-            
-                <option value="Double Sided Tape (3-MM)">
-                    Double Sided Tape (3-MM)
-                </option>
-            
-                <option value="Drinking water Glass Medium Size">
-                    Drinking water Glass Medium Size
-                </option>
-            
-                <option value="Dust bin-big ( blue )">
-                    Dust bin-big ( blue )
-                </option>
-            
-                <option value="Dust bin-big ( Green )">
-                    Dust bin-big ( Green )
-                </option>
-            
-                <option value="Dustbin-Office Close type">
-                    Dustbin-Office Close type
-                </option>
-            
-                <option value="Fevistic">
-                    Fevistic
-                </option>
-            
-                <option value="Flate File">
-                    Flate File
-                </option>
-            
-                <option value="Flex kwik">
-                    Flex kwik
-                </option>
-            
-                <option value="Floor Mate">
-                    Floor Mate
-                </option>
-            
-                <option value="Floor mop">
-                    Floor mop
-                </option>
-            
-                <option value="GARBAGE BAG ( Medium size )(Office Use )">
-                    GARBAGE BAG ( Medium size )(Office Use )
-                </option>
-            
-                <option value="Gum">
-                    Gum
-                </option>
-            
-                <option value="Harpic">
-                    Harpic
-                </option>
-            
-                <option value="Highlighter - multicolor">
-                    Highlighter - multicolor
-                </option>
-            
-                <option value="Inward Stamp">
-                    Inward Stamp
-                </option>
-            
-                <option value="Lyzal">
-                    Lyzal
-                </option>
-            
-                <option value="Marker for White board luxor (Black)">
-                    Marker for White board luxor (Black)
-                </option>
-            
-                <option value="Marker for White board luxor (blue)">
-                    Marker for White board luxor (blue)
-                </option>
-            
-                <option value="Marker for White board luxor (Red)">
-                    Marker for White board luxor (Red)
-                </option>
-            
-                <option value="Marker for White board luxor(Green)">
-                    Marker for White board luxor(Green)
-                </option>
-            
-                <option value="Ocean Round Stamp -Chennai address">
-                    Ocean Round Stamp -Chennai address
-                </option>
-            
-                <option value="Ocean Round Stamp -Kochi">
-                    Ocean Round Stamp -Kochi
-                </option>
-            
-                <option value="odonil jasmine mist">
-                    odonil jasmine mist
-                </option>
-            
-                <option value="Out ward Stamp">
-                    Out ward Stamp
-                </option>
-            
-                <option value="Packing Tape -2''inch Brown">
-                    Packing Tape -2''inch Brown
-                </option>
-            
-                <option value="Packing Tape -2''inch cello">
-                    Packing Tape -2''inch cello
-                </option>
-            
-                <option value="Penholder">
-                    Penholder
-                </option>
-            
-                <option value="Permenent marker">
-                    Permenent marker
-                </option>
-            
-                <option value="Pencil HP">
-                    Pencil HP
-                </option>
-            
-                <option value="RED Pen">
-                    RED Pen
-                </option>
-            
-                <option value="Register - 3no.s (Safety)">
-                    Register - 3no.s (Safety)
-                </option>
-            
-                <option value="Room spray multi flavour">
-                    Room spray multi flavour
-                </option>
-            
-                <option value="Scale (steel)-30cm">
-                    Scale (steel)-30cm
-                </option>
-            
-                <option value="Stamp Pad Big">
-                    Stamp Pad Big
-                </option>
-            
-                <option value="Stamp Pad ink">
-                    Stamp Pad ink
-                </option>
-            
-                <option value="Stamp Pad Small">
-                    Stamp Pad Small
-                </option>
-            
-                <option value="Stapler Big">
-                    Stapler Big
-                </option>
-            
-                <option value="Stapler Pin Big">
-                    Stapler Pin Big
-                </option>
-            
-                <option value="Stapler Pin Small (Full Box )">
-                    Stapler Pin Small (Full Box )
-                </option>
-            
-                <option value="Stapler Small">
-                    Stapler Small
-                </option>
-            
-                <option value="Sticky notes">
-                    Sticky notes
-                </option>
-            
-                <option value="Stretch film roll - 2 Feet (Packing Purpose)">
-                    Stretch film roll - 2 Feet (Packing Purpose)
-                </option>
-            
-                <option value="Tissue paper PKT">
-                    Tissue paper PKT
-                </option>
-            
-                <option value="Umberla ( Small Size )">
-                    Umberla ( Small Size )
-                </option>
-            
-                <option value="Umberla (Medium size )">
-                    Umberla (Medium size )
-                </option>
-            
-                <option value="Water Bottle 1 ltr">
-                    Water Bottle 1 ltr
-                </option>
-            
-                <option value="Whistle">
-                    Whistle
-                </option>
-            
-                <option value="Writing Pad">
-                    Writing Pad
-                </option>
-            
-                <option value="Other's">
-                    Other's
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="BOX">
-                    BOX
-                </option>
-            
-                <option value="BUNDLE">
-                    BUNDLE
-                </option>
-            
-                <option value="NO's">
-                    NO's
-                </option>
-            
-                <option value="OTHER's">
-                    OTHER's
-                </option>
-            
-                <option value="PAC">
-                    PAC
-                </option>
-            
-                <option value="PCS">
-                    PCS
-                </option>
-            
-                <option value="PKT">
-                    PKT
-                </option>
-            
-                <option value="ROL">
-                    ROL
-                </option>
-            
-                <option value="SET">
-                    SET
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="1">
-                    1
-                </option>
-            
-                <option value="2">
-                    2
-                </option>
-            
-                <option value="3">
-                    3
-                </option>
-            
-                <option value="4">
-                    4
-                </option>
-            
-                <option value="5">
-                    5
-                </option>
-            
-                <option value="6">
-                    6
-                </option>
-            
-                <option value="7">
-                    7
-                </option>
-            
-                <option value="8">
-                    8
-                </option>
-            
-                <option value="9">
-                    9
-                </option>
-            
-                <option value="10">
-                    10
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        
-
-            <tr>
-
-                <td>
-                    3
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="A3 Envelop Cover Ocean">
-                    A3 Envelop Cover Ocean
-                </option>
-            
-                <option value="A4 Envelop Cover Ocean">
-                    A4 Envelop Cover Ocean
-                </option>
-            
-                <option value="Binder Clip -15 MM">
-                    Binder Clip -15 MM
-                </option>
-            
-                <option value="Binder Clip -19 MM">
-                    Binder Clip -19 MM
-                </option>
-            
-                <option value="Binder Clip -25MM">
-                    Binder Clip -25MM
-                </option>
-            
-                <option value="Binder Clip -32MM">
-                    Binder Clip -32MM
-                </option>
-            
-                <option value="Binder Clip -41MM">
-                    Binder Clip -41MM
-                </option>
-            
-                <option value="Black Pen">
-                    Black Pen
-                </option>
-            
-                <option value="Blue Pen">
-                    Blue Pen
-                </option>
-            
-                <option value="Box File – (Medium Size)">
-                    Box File – (Medium Size)
-                </option>
-            
-                <option value="Calculator Basic Business (For , Planning)">
-                    Calculator Basic Business (For , Planning)
-                </option>
-            
-                <option value="Carbon Sheet Blue">
-                    Carbon Sheet Blue
-                </option>
-            
-                <option value="CD Marker Black (Safety)">
-                    CD Marker Black (Safety)
-                </option>
-            
-                <option value="CD Marker Blue (Safety)">
-                    CD Marker Blue (Safety)
-                </option>
-            
-                <option value="CD Marker Green (Safety)">
-                    CD Marker Green (Safety)
-                </option>
-            
-                <option value="Celotape -Small">
-                    Celotape -Small
-                </option>
-            
-                <option value="Double Sided Tape (3-MM)">
-                    Double Sided Tape (3-MM)
-                </option>
-            
-                <option value="Drinking water Glass Medium Size">
-                    Drinking water Glass Medium Size
-                </option>
-            
-                <option value="Dust bin-big ( blue )">
-                    Dust bin-big ( blue )
-                </option>
-            
-                <option value="Dust bin-big ( Green )">
-                    Dust bin-big ( Green )
-                </option>
-            
-                <option value="Dustbin-Office Close type">
-                    Dustbin-Office Close type
-                </option>
-            
-                <option value="Fevistic">
-                    Fevistic
-                </option>
-            
-                <option value="Flate File">
-                    Flate File
-                </option>
-            
-                <option value="Flex kwik">
-                    Flex kwik
-                </option>
-            
-                <option value="Floor Mate">
-                    Floor Mate
-                </option>
-            
-                <option value="Floor mop">
-                    Floor mop
-                </option>
-            
-                <option value="GARBAGE BAG ( Medium size )(Office Use )">
-                    GARBAGE BAG ( Medium size )(Office Use )
-                </option>
-            
-                <option value="Gum">
-                    Gum
-                </option>
-            
-                <option value="Harpic">
-                    Harpic
-                </option>
-            
-                <option value="Highlighter - multicolor">
-                    Highlighter - multicolor
-                </option>
-            
-                <option value="Inward Stamp">
-                    Inward Stamp
-                </option>
-            
-                <option value="Lyzal">
-                    Lyzal
-                </option>
-            
-                <option value="Marker for White board luxor (Black)">
-                    Marker for White board luxor (Black)
-                </option>
-            
-                <option value="Marker for White board luxor (blue)">
-                    Marker for White board luxor (blue)
-                </option>
-            
-                <option value="Marker for White board luxor (Red)">
-                    Marker for White board luxor (Red)
-                </option>
-            
-                <option value="Marker for White board luxor(Green)">
-                    Marker for White board luxor(Green)
-                </option>
-            
-                <option value="Ocean Round Stamp -Chennai address">
-                    Ocean Round Stamp -Chennai address
-                </option>
-            
-                <option value="Ocean Round Stamp -Kochi">
-                    Ocean Round Stamp -Kochi
-                </option>
-            
-                <option value="odonil jasmine mist">
-                    odonil jasmine mist
-                </option>
-            
-                <option value="Out ward Stamp">
-                    Out ward Stamp
-                </option>
-            
-                <option value="Packing Tape -2''inch Brown">
-                    Packing Tape -2''inch Brown
-                </option>
-            
-                <option value="Packing Tape -2''inch cello">
-                    Packing Tape -2''inch cello
-                </option>
-            
-                <option value="Penholder">
-                    Penholder
-                </option>
-            
-                <option value="Permenent marker">
-                    Permenent marker
-                </option>
-            
-                <option value="Pencil HP">
-                    Pencil HP
-                </option>
-            
-                <option value="RED Pen">
-                    RED Pen
-                </option>
-            
-                <option value="Register - 3no.s (Safety)">
-                    Register - 3no.s (Safety)
-                </option>
-            
-                <option value="Room spray multi flavour">
-                    Room spray multi flavour
-                </option>
-            
-                <option value="Scale (steel)-30cm">
-                    Scale (steel)-30cm
-                </option>
-            
-                <option value="Stamp Pad Big">
-                    Stamp Pad Big
-                </option>
-            
-                <option value="Stamp Pad ink">
-                    Stamp Pad ink
-                </option>
-            
-                <option value="Stamp Pad Small">
-                    Stamp Pad Small
-                </option>
-            
-                <option value="Stapler Big">
-                    Stapler Big
-                </option>
-            
-                <option value="Stapler Pin Big">
-                    Stapler Pin Big
-                </option>
-            
-                <option value="Stapler Pin Small (Full Box )">
-                    Stapler Pin Small (Full Box )
-                </option>
-            
-                <option value="Stapler Small">
-                    Stapler Small
-                </option>
-            
-                <option value="Sticky notes">
-                    Sticky notes
-                </option>
-            
-                <option value="Stretch film roll - 2 Feet (Packing Purpose)">
-                    Stretch film roll - 2 Feet (Packing Purpose)
-                </option>
-            
-                <option value="Tissue paper PKT">
-                    Tissue paper PKT
-                </option>
-            
-                <option value="Umberla ( Small Size )">
-                    Umberla ( Small Size )
-                </option>
-            
-                <option value="Umberla (Medium size )">
-                    Umberla (Medium size )
-                </option>
-            
-                <option value="Water Bottle 1 ltr">
-                    Water Bottle 1 ltr
-                </option>
-            
-                <option value="Whistle">
-                    Whistle
-                </option>
-            
-                <option value="Writing Pad">
-                    Writing Pad
-                </option>
-            
-                <option value="Other's">
-                    Other's
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="BOX">
-                    BOX
-                </option>
-            
-                <option value="BUNDLE">
-                    BUNDLE
-                </option>
-            
-                <option value="NO's">
-                    NO's
-                </option>
-            
-                <option value="OTHER's">
-                    OTHER's
-                </option>
-            
-                <option value="PAC">
-                    PAC
-                </option>
-            
-                <option value="PCS">
-                    PCS
-                </option>
-            
-                <option value="PKT">
-                    PKT
-                </option>
-            
-                <option value="ROL">
-                    ROL
-                </option>
-            
-                <option value="SET">
-                    SET
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="1">
-                    1
-                </option>
-            
-                <option value="2">
-                    2
-                </option>
-            
-                <option value="3">
-                    3
-                </option>
-            
-                <option value="4">
-                    4
-                </option>
-            
-                <option value="5">
-                    5
-                </option>
-            
-                <option value="6">
-                    6
-                </option>
-            
-                <option value="7">
-                    7
-                </option>
-            
-                <option value="8">
-                    8
-                </option>
-            
-                <option value="9">
-                    9
-                </option>
-            
-                <option value="10">
-                    10
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        
-
-            <tr>
-
-                <td>
-                    4
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="A3 Envelop Cover Ocean">
-                    A3 Envelop Cover Ocean
-                </option>
-            
-                <option value="A4 Envelop Cover Ocean">
-                    A4 Envelop Cover Ocean
-                </option>
-            
-                <option value="Binder Clip -15 MM">
-                    Binder Clip -15 MM
-                </option>
-            
-                <option value="Binder Clip -19 MM">
-                    Binder Clip -19 MM
-                </option>
-            
-                <option value="Binder Clip -25MM">
-                    Binder Clip -25MM
-                </option>
-            
-                <option value="Binder Clip -32MM">
-                    Binder Clip -32MM
-                </option>
-            
-                <option value="Binder Clip -41MM">
-                    Binder Clip -41MM
-                </option>
-            
-                <option value="Black Pen">
-                    Black Pen
-                </option>
-            
-                <option value="Blue Pen">
-                    Blue Pen
-                </option>
-            
-                <option value="Box File – (Medium Size)">
-                    Box File – (Medium Size)
-                </option>
-            
-                <option value="Calculator Basic Business (For , Planning)">
-                    Calculator Basic Business (For , Planning)
-                </option>
-            
-                <option value="Carbon Sheet Blue">
-                    Carbon Sheet Blue
-                </option>
-            
-                <option value="CD Marker Black (Safety)">
-                    CD Marker Black (Safety)
-                </option>
-            
-                <option value="CD Marker Blue (Safety)">
-                    CD Marker Blue (Safety)
-                </option>
-            
-                <option value="CD Marker Green (Safety)">
-                    CD Marker Green (Safety)
-                </option>
-            
-                <option value="Celotape -Small">
-                    Celotape -Small
-                </option>
-            
-                <option value="Double Sided Tape (3-MM)">
-                    Double Sided Tape (3-MM)
-                </option>
-            
-                <option value="Drinking water Glass Medium Size">
-                    Drinking water Glass Medium Size
-                </option>
-            
-                <option value="Dust bin-big ( blue )">
-                    Dust bin-big ( blue )
-                </option>
-            
-                <option value="Dust bin-big ( Green )">
-                    Dust bin-big ( Green )
-                </option>
-            
-                <option value="Dustbin-Office Close type">
-                    Dustbin-Office Close type
-                </option>
-            
-                <option value="Fevistic">
-                    Fevistic
-                </option>
-            
-                <option value="Flate File">
-                    Flate File
-                </option>
-            
-                <option value="Flex kwik">
-                    Flex kwik
-                </option>
-            
-                <option value="Floor Mate">
-                    Floor Mate
-                </option>
-            
-                <option value="Floor mop">
-                    Floor mop
-                </option>
-            
-                <option value="GARBAGE BAG ( Medium size )(Office Use )">
-                    GARBAGE BAG ( Medium size )(Office Use )
-                </option>
-            
-                <option value="Gum">
-                    Gum
-                </option>
-            
-                <option value="Harpic">
-                    Harpic
-                </option>
-            
-                <option value="Highlighter - multicolor">
-                    Highlighter - multicolor
-                </option>
-            
-                <option value="Inward Stamp">
-                    Inward Stamp
-                </option>
-            
-                <option value="Lyzal">
-                    Lyzal
-                </option>
-            
-                <option value="Marker for White board luxor (Black)">
-                    Marker for White board luxor (Black)
-                </option>
-            
-                <option value="Marker for White board luxor (blue)">
-                    Marker for White board luxor (blue)
-                </option>
-            
-                <option value="Marker for White board luxor (Red)">
-                    Marker for White board luxor (Red)
-                </option>
-            
-                <option value="Marker for White board luxor(Green)">
-                    Marker for White board luxor(Green)
-                </option>
-            
-                <option value="Ocean Round Stamp -Chennai address">
-                    Ocean Round Stamp -Chennai address
-                </option>
-            
-                <option value="Ocean Round Stamp -Kochi">
-                    Ocean Round Stamp -Kochi
-                </option>
-            
-                <option value="odonil jasmine mist">
-                    odonil jasmine mist
-                </option>
-            
-                <option value="Out ward Stamp">
-                    Out ward Stamp
-                </option>
-            
-                <option value="Packing Tape -2''inch Brown">
-                    Packing Tape -2''inch Brown
-                </option>
-            
-                <option value="Packing Tape -2''inch cello">
-                    Packing Tape -2''inch cello
-                </option>
-            
-                <option value="Penholder">
-                    Penholder
-                </option>
-            
-                <option value="Permenent marker">
-                    Permenent marker
-                </option>
-            
-                <option value="Pencil HP">
-                    Pencil HP
-                </option>
-            
-                <option value="RED Pen">
-                    RED Pen
-                </option>
-            
-                <option value="Register - 3no.s (Safety)">
-                    Register - 3no.s (Safety)
-                </option>
-            
-                <option value="Room spray multi flavour">
-                    Room spray multi flavour
-                </option>
-            
-                <option value="Scale (steel)-30cm">
-                    Scale (steel)-30cm
-                </option>
-            
-                <option value="Stamp Pad Big">
-                    Stamp Pad Big
-                </option>
-            
-                <option value="Stamp Pad ink">
-                    Stamp Pad ink
-                </option>
-            
-                <option value="Stamp Pad Small">
-                    Stamp Pad Small
-                </option>
-            
-                <option value="Stapler Big">
-                    Stapler Big
-                </option>
-            
-                <option value="Stapler Pin Big">
-                    Stapler Pin Big
-                </option>
-            
-                <option value="Stapler Pin Small (Full Box )">
-                    Stapler Pin Small (Full Box )
-                </option>
-            
-                <option value="Stapler Small">
-                    Stapler Small
-                </option>
-            
-                <option value="Sticky notes">
-                    Sticky notes
-                </option>
-            
-                <option value="Stretch film roll - 2 Feet (Packing Purpose)">
-                    Stretch film roll - 2 Feet (Packing Purpose)
-                </option>
-            
-                <option value="Tissue paper PKT">
-                    Tissue paper PKT
-                </option>
-            
-                <option value="Umberla ( Small Size )">
-                    Umberla ( Small Size )
-                </option>
-            
-                <option value="Umberla (Medium size )">
-                    Umberla (Medium size )
-                </option>
-            
-                <option value="Water Bottle 1 ltr">
-                    Water Bottle 1 ltr
-                </option>
-            
-                <option value="Whistle">
-                    Whistle
-                </option>
-            
-                <option value="Writing Pad">
-                    Writing Pad
-                </option>
-            
-                <option value="Other's">
-                    Other's
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="BOX">
-                    BOX
-                </option>
-            
-                <option value="BUNDLE">
-                    BUNDLE
-                </option>
-            
-                <option value="NO's">
-                    NO's
-                </option>
-            
-                <option value="OTHER's">
-                    OTHER's
-                </option>
-            
-                <option value="PAC">
-                    PAC
-                </option>
-            
-                <option value="PCS">
-                    PCS
-                </option>
-            
-                <option value="PKT">
-                    PKT
-                </option>
-            
-                <option value="ROL">
-                    ROL
-                </option>
-            
-                <option value="SET">
-                    SET
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="1">
-                    1
-                </option>
-            
-                <option value="2">
-                    2
-                </option>
-            
-                <option value="3">
-                    3
-                </option>
-            
-                <option value="4">
-                    4
-                </option>
-            
-                <option value="5">
-                    5
-                </option>
-            
-                <option value="6">
-                    6
-                </option>
-            
-                <option value="7">
-                    7
-                </option>
-            
-                <option value="8">
-                    8
-                </option>
-            
-                <option value="9">
-                    9
-                </option>
-            
-                <option value="10">
-                    10
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        
-
-            <tr>
-
-                <td>
-                    5
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="A3 Envelop Cover Ocean">
-                    A3 Envelop Cover Ocean
-                </option>
-            
-                <option value="A4 Envelop Cover Ocean">
-                    A4 Envelop Cover Ocean
-                </option>
-            
-                <option value="Binder Clip -15 MM">
-                    Binder Clip -15 MM
-                </option>
-            
-                <option value="Binder Clip -19 MM">
-                    Binder Clip -19 MM
-                </option>
-            
-                <option value="Binder Clip -25MM">
-                    Binder Clip -25MM
-                </option>
-            
-                <option value="Binder Clip -32MM">
-                    Binder Clip -32MM
-                </option>
-            
-                <option value="Binder Clip -41MM">
-                    Binder Clip -41MM
-                </option>
-            
-                <option value="Black Pen">
-                    Black Pen
-                </option>
-            
-                <option value="Blue Pen">
-                    Blue Pen
-                </option>
-            
-                <option value="Box File – (Medium Size)">
-                    Box File – (Medium Size)
-                </option>
-            
-                <option value="Calculator Basic Business (For , Planning)">
-                    Calculator Basic Business (For , Planning)
-                </option>
-            
-                <option value="Carbon Sheet Blue">
-                    Carbon Sheet Blue
-                </option>
-            
-                <option value="CD Marker Black (Safety)">
-                    CD Marker Black (Safety)
-                </option>
-            
-                <option value="CD Marker Blue (Safety)">
-                    CD Marker Blue (Safety)
-                </option>
-            
-                <option value="CD Marker Green (Safety)">
-                    CD Marker Green (Safety)
-                </option>
-            
-                <option value="Celotape -Small">
-                    Celotape -Small
-                </option>
-            
-                <option value="Double Sided Tape (3-MM)">
-                    Double Sided Tape (3-MM)
-                </option>
-            
-                <option value="Drinking water Glass Medium Size">
-                    Drinking water Glass Medium Size
-                </option>
-            
-                <option value="Dust bin-big ( blue )">
-                    Dust bin-big ( blue )
-                </option>
-            
-                <option value="Dust bin-big ( Green )">
-                    Dust bin-big ( Green )
-                </option>
-            
-                <option value="Dustbin-Office Close type">
-                    Dustbin-Office Close type
-                </option>
-            
-                <option value="Fevistic">
-                    Fevistic
-                </option>
-            
-                <option value="Flate File">
-                    Flate File
-                </option>
-            
-                <option value="Flex kwik">
-                    Flex kwik
-                </option>
-            
-                <option value="Floor Mate">
-                    Floor Mate
-                </option>
-            
-                <option value="Floor mop">
-                    Floor mop
-                </option>
-            
-                <option value="GARBAGE BAG ( Medium size )(Office Use )">
-                    GARBAGE BAG ( Medium size )(Office Use )
-                </option>
-            
-                <option value="Gum">
-                    Gum
-                </option>
-            
-                <option value="Harpic">
-                    Harpic
-                </option>
-            
-                <option value="Highlighter - multicolor">
-                    Highlighter - multicolor
-                </option>
-            
-                <option value="Inward Stamp">
-                    Inward Stamp
-                </option>
-            
-                <option value="Lyzal">
-                    Lyzal
-                </option>
-            
-                <option value="Marker for White board luxor (Black)">
-                    Marker for White board luxor (Black)
-                </option>
-            
-                <option value="Marker for White board luxor (blue)">
-                    Marker for White board luxor (blue)
-                </option>
-            
-                <option value="Marker for White board luxor (Red)">
-                    Marker for White board luxor (Red)
-                </option>
-            
-                <option value="Marker for White board luxor(Green)">
-                    Marker for White board luxor(Green)
-                </option>
-            
-                <option value="Ocean Round Stamp -Chennai address">
-                    Ocean Round Stamp -Chennai address
-                </option>
-            
-                <option value="Ocean Round Stamp -Kochi">
-                    Ocean Round Stamp -Kochi
-                </option>
-            
-                <option value="odonil jasmine mist">
-                    odonil jasmine mist
-                </option>
-            
-                <option value="Out ward Stamp">
-                    Out ward Stamp
-                </option>
-            
-                <option value="Packing Tape -2''inch Brown">
-                    Packing Tape -2''inch Brown
-                </option>
-            
-                <option value="Packing Tape -2''inch cello">
-                    Packing Tape -2''inch cello
-                </option>
-            
-                <option value="Penholder">
-                    Penholder
-                </option>
-            
-                <option value="Permenent marker">
-                    Permenent marker
-                </option>
-            
-                <option value="Pencil HP">
-                    Pencil HP
-                </option>
-            
-                <option value="RED Pen">
-                    RED Pen
-                </option>
-            
-                <option value="Register - 3no.s (Safety)">
-                    Register - 3no.s (Safety)
-                </option>
-            
-                <option value="Room spray multi flavour">
-                    Room spray multi flavour
-                </option>
-            
-                <option value="Scale (steel)-30cm">
-                    Scale (steel)-30cm
-                </option>
-            
-                <option value="Stamp Pad Big">
-                    Stamp Pad Big
-                </option>
-            
-                <option value="Stamp Pad ink">
-                    Stamp Pad ink
-                </option>
-            
-                <option value="Stamp Pad Small">
-                    Stamp Pad Small
-                </option>
-            
-                <option value="Stapler Big">
-                    Stapler Big
-                </option>
-            
-                <option value="Stapler Pin Big">
-                    Stapler Pin Big
-                </option>
-            
-                <option value="Stapler Pin Small (Full Box )">
-                    Stapler Pin Small (Full Box )
-                </option>
-            
-                <option value="Stapler Small">
-                    Stapler Small
-                </option>
-            
-                <option value="Sticky notes">
-                    Sticky notes
-                </option>
-            
-                <option value="Stretch film roll - 2 Feet (Packing Purpose)">
-                    Stretch film roll - 2 Feet (Packing Purpose)
-                </option>
-            
-                <option value="Tissue paper PKT">
-                    Tissue paper PKT
-                </option>
-            
-                <option value="Umberla ( Small Size )">
-                    Umberla ( Small Size )
-                </option>
-            
-                <option value="Umberla (Medium size )">
-                    Umberla (Medium size )
-                </option>
-            
-                <option value="Water Bottle 1 ltr">
-                    Water Bottle 1 ltr
-                </option>
-            
-                <option value="Whistle">
-                    Whistle
-                </option>
-            
-                <option value="Writing Pad">
-                    Writing Pad
-                </option>
-            
-                <option value="Other's">
-                    Other's
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="BOX">
-                    BOX
-                </option>
-            
-                <option value="BUNDLE">
-                    BUNDLE
-                </option>
-            
-                <option value="NO's">
-                    NO's
-                </option>
-            
-                <option value="OTHER's">
-                    OTHER's
-                </option>
-            
-                <option value="PAC">
-                    PAC
-                </option>
-            
-                <option value="PCS">
-                    PCS
-                </option>
-            
-                <option value="PKT">
-                    PKT
-                </option>
-            
-                <option value="ROL">
-                    ROL
-                </option>
-            
-                <option value="SET">
-                    SET
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        
-                <option value="1">
-                    1
-                </option>
-            
-                <option value="2">
-                    2
-                </option>
-            
-                <option value="3">
-                    3
-                </option>
-            
-                <option value="4">
-                    4
-                </option>
-            
-                <option value="5">
-                    5
-                </option>
-            
-                <option value="6">
-                    6
-                </option>
-            
-                <option value="7">
-                    7
-                </option>
-            
-                <option value="8">
-                    8
-                </option>
-            
-                <option value="9">
-                    9
-                </option>
-            
-                <option value="10">
-                    10
-                </option>
-            
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        </tbody>
-
-                    </table>
-
-                </div><br>
-
-                <div class="form-group">
-
-                    <label>
-                        Remarks
-                        <span class="Remarks">*</span>
-                    </label>
-
-                    <input type="text" id="remarks" placeholder="Your Answer">
-
-                </div>
-
-
-                <!-- =====================================================
-             BUTTONS
-        ===================================================== -->
-
-                <div class="actions">
-
-                    <button type="submit" class="submit-btn">
-                        Submit
-                    </button>
-
-
-                    <button type="button" class="admin-btn" onclick="showAdminLogin()">
-                        Admin Login
-                    </button>
-
-                </div>
-
-
-                <div id="message"></div>
-
-            </form>
-
-        </section>
-
-
-        <!-- =====================================================
-     ADMIN LOGIN
-===================================================== -->
-
-        <section class="card admin-login hidden" id="adminLogin">
-
-            <h2>
-                Admin Login
-            </h2>
-
-
-            <div class="form-group">
-
-                <label>
-                    Username
-                </label>
-
-                <input type="text" id="adminUsername" placeholder="Enter Admin Username">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Password
-                </label>
-
-                <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-
-            </div>
-
-
-            <div class="actions">
-
-                <button type="button" class="admin-btn" onclick="adminLogin()">
-                    Login
-                </button>
-
-
-                <button type="button" class="clear-btn" onclick="closeAdminLogin()">
-                    Cancel
-                </button>
-
-            </div>
-
-
-            <div id="loginError" class="login-error hidden"></div>
-
-        </section>
-
-
-        <!-- =====================================================
-     ADMIN PANEL
-===================================================== -->
-
-        <section class="card admin-panel" id="adminPanel">
-
-            <div class="section-title">
-
-                Admin Dashboard
-
-            </div>
-
-
-            <div class="admin-info">
-
-                You are logged in as the single Admin.
-                Data submitted from all mobiles and laptops is stored
-                in one shared online database. Only Admin can view,
-                export and delete the submitted request data.
-
-            </div>
-
-
-            <div class="actions">
-
-                <button type="button" class="excel-btn" onclick="exportToExcel()">
-                    Download Excel
-                </button>
-
-
-                <button type="button" class="clear-btn" onclick="clearAllData()">
-                    Clear All Data
-                </button>
-
-
-                <button type="button" class="logout-btn" onclick="adminLogout()">
-                    Logout
-                </button>
-
-            </div>
-
-
-            <div class="table-wrapper">
-
-                <table class="admin-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Employee</th>
-                            <th>Emp-No</th>
-                            <th>Mobile</th>
-                            <th>Project</th>
-                            <th>Company</th>
-                            <th>Department</th>
-                            <th>Date</th>
-                            <th>Item</th>
-                            <th>UOM</th>
-                            <th>Remarks</th>
-                            <th>Quantity</th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="adminTableBody">
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <script>
-
-        /* =====================================================
-           ADMIN LOGIN DETAILS
-        ===================================================== */
-
-        const ADMIN_USERNAME = "viswa";
-
-        const ADMIN_PASSWORD = "viswa@123";
-
-
-
-        const API_URL = "https://script.google.com/macros/s/AKfycbw0K1evJYcgvRrG4al59--Z8q3Muj3Aldg5tonEfOIIOcW3adrxJCNMOXLteHvDN0bF/exec";
-        let requests = [];
-        let adminToken = sessionStorage.getItem("adminToken") || "";
-
-
-        /* =====================================================
-           SET TODAY'S DATE
-        ===================================================== */
-
-        function getTodayDDMMYYYY() {
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, "0");
-            const month = String(today.getMonth() + 1).padStart(2, "0");
-            const year = today.getFullYear();
-            return `${day}-${month}-${year}`;
-        }
-
-        function isValidDateDDMMYYYY(value) {
-            const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(String(value || "").trim());
-            if (!match) return false;
-
-            const day = Number(match[1]);
-            const month = Number(match[2]);
-            const year = Number(match[3]);
-            const date = new Date(year, month - 1, day);
-
-            return date.getFullYear() === year &&
-                date.getMonth() === month - 1 &&
-                date.getDate() === day;
-        }
-
-        // Display and store the calendar date only; no UTC/IST timestamp.
-        function formatDateForDisplay(value) {
-            if (value === null || value === undefined || value === "") return "";
-            const text = String(value).trim();
-
-            if (/^\d{2}-\d{2}-\d{4}$/.test(text)) return text;
-
-            // Handle ISO values returned by Google Sheets / Apps Script.
-            const isoMatch = /^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/.exec(text);
-            if (isoMatch) {
-                // For timestamp values, convert to the browser's local calendar date.
-                if (text.includes("T")) {
-                    const parsed = new Date(text);
-                    if (!Number.isNaN(parsed.getTime())) {
-                        const day = String(parsed.getDate()).padStart(2, "0");
-                        const month = String(parsed.getMonth() + 1).padStart(2, "0");
-                        return `${day}-${month}-${parsed.getFullYear()}`;
-                    }
-                }
-                return `${isoMatch[3]}-${isoMatch[2]}-${isoMatch[1]}`;
-            }
-
-            return text;
-        }
-
-        const requestDateInput = document.getElementById("requestDate");
-        requestDateInput.value = getTodayDDMMYYYY();
-
-        // Add hyphens automatically when the user types digits.
-        requestDateInput.addEventListener("input", function () {
-            let digits = this.value.replace(/\D/g, "").slice(0, 8);
-            if (digits.length > 4) {
-                digits = digits.slice(0, 2) + "-" + digits.slice(2, 4) + "-" + digits.slice(4);
-            } else if (digits.length > 2) {
-                digits = digits.slice(0, 2) + "-" + digits.slice(2);
-            }
-            this.value = digits;
-        });
-
-
-        /* =====================================================
-           STATIONERY LIST
-        ===================================================== */
-
-        const stationeryItems = [
-
-            // "Binder Clip 15mm",
-            // "Binder Clip 19mm",
-            // "Binder Clip 25mm",
-            // "Binder Clip 32mm",
-            // "Binder Clip 41mm",
-
-            // "Box File - Kangaro Clip",
-
-            // "Brown Tape 2\"",
-
-            // "Calculator Casio MJ 120 (Original)",
-
-            // "Carbon Sheet Blue",
-
-            // "Cello Tape 1\"",
-            // "Cello Tape 2\"",
-
-            // "Classmate Notebook Long Ruled 160 Page",
-
-            // "Classmate Notebook Long Unruled 160 Page",
-
-            // "Description",
-
-            // "Double Side Tape 1\" Red",
-
-            // "Dustbin 60 Ltrs - Swing -Blue,Green",
-
-            // "Fevi Gum",
-            // "Fevi Quick Small",
-            // "Fevi Stick 15gm",
-
-            // "Flair Ezee Click pen Black Color",
-            // "Flair Ezee Click pen Blue Color",
-            // "Flair Ezee Click pen Red Color",
-
-            // "Floor Mat Medium Size",
-
-            // "Garbage Bag Medium",
-
-            // "Harpic 500ml",
-
-            // "Highlighter Mix Color",
-
-            // "Lizol 500ml",
-
-            // "Marker Black Color",
-            // "Marker Blue Color",
-            // "Marker Green Color",
-
-            // "Mop & Stick Set",
-
-            // "Odonil Fresher Big Size - Jasmine Mist",
-
-            // "Permanent Marker - Black",
-
-            // "Post IT Pad 3X3",
-
-            // "Room Spary - Godrej - mix",
-
-            // "Spring File",
-
-            // "Stamp Pad Ink Big Camlin Blue",
-
-            // "Stamp Pad Ink Blue",
-
-            // "Stapler Machine - 10D",
-
-            // "Stapler Machine Big Hander HP 45",
-
-            // "Stapler Pin 24/6",
-
-            // "Steel Scale",
-
-            // "Steel Water Glass Big",
-
-            // "Stretch Film 2 Feet",
-
-            // "Tissue Paper 200Gms Face Wash",
-
-            // "Toilet Brush - Round",
-
-            // "Umbrella Medium Size",
-
-            // "Umbrella Small Size",
-
-            // "Water Bottle 1 Ltr",
-
-            // "Whisel Plastic",
-
-            // "White Board Marker Black",
-
-            // "White Board Marker Blue",
-
-            // "White Board Marker Green Luxur",
-
-            // "White Board Marker Red",
-
-
-
-
-
-
-            "A3 Envelop Cover Ocean", 
-            "A4 Envelop Cover Ocean", 
-            "Binder Clip -15 MM", 
-            "Binder Clip -19 MM", 
-            "Binder Clip -25MM",
-            "Binder Clip -32MM",
-            "Binder Clip -41MM",
-            "Black Pen",
-            "Blue Pen", 
-            "Box File – (Medium Size)",
-            "Calculator Basic Business (For , Planning)",
-            "Carbon Sheet Blue",
-            "CD Marker Black (Safety)",
-            "CD Marker Blue (Safety)",
-            "CD Marker Green (Safety)",
-            "Celotape -Small",
-            "Double Sided Tape (3-MM)",
-            "Drinking water Glass Medium Size",
-            "Dust bin-big ( blue )",
-            "Dust bin-big ( Green )",
-            "Dustbin-Office Close type",
-            "Fevistic", 
-            "Flate File", 
-            "Flex kwik",
-            "Floor Mate",
-            "Floor mop",
-            "GARBAGE BAG ( Medium size )(Office Use )",
-            "Gum",
-            "Harpic",
-            "Highlighter - multicolor",
-            "Inward Stamp",
-            "Lyzal",
-            "Marker for White board luxor (Black)",
-            "Marker for White board luxor (blue)",
-            "Marker for White board luxor (Red)",
-            "Marker for White board luxor(Green)",
-            "Ocean Round Stamp -Chennai address",
-            "Ocean Round Stamp -Kochi",
-            "odonil jasmine mist",
-            "Out ward Stamp",
-            "Packing Tape -2''inch Brown",
-            "Packing Tape -2''inch cello",
-            "Penholder",
-            "Permenent marker",
-            "Pencil HP",
-            "RED Pen",
-            "Register - 3no.s (Safety)",
-            "Room spray multi flavour",
-            "Scale (steel)-30cm",
-            "Stamp Pad Big",
-            "Stamp Pad ink",
-            "Stamp Pad Small",
-            "Stapler Big",
-            "Stapler Pin Big",
-            "Stapler Pin Small (Full Box )",
-            "Stapler Small",
-            "Sticky notes",
-            "Stretch film roll - 2 Feet (Packing Purpose)",
-            "Tissue paper PKT",
-            "Umberla ( Small Size )",
-            "Umberla (Medium size )",
-            "Water Bottle 1 ltr",
-            "Whistle",
-            "Writing Pad",
-            "Other's",
-            "Carbolic soap",
-            "Dustbin",
-            "Duster cloth",
-            "Floor wiper",
-            "Floor wiper with handle",
-            "Liquid hand wash",
-            "Phenyl",
-            "Room freshener (spray)",
-            "Scrubber (brush)",
-            "Tissue paper",
-            "Toilet cleaner",
-            "Toilet-cleaning brush"
-        ];
-
-
-        /* =====================================================
-           UOM
-        ===================================================== */
-
-        const uomOptions = [
-
-            "BOX",
-            "BUNDLE",
-            "NO's",
-            "OTHER's",
-            "PAC",
-            "PCS",
-            "PKT",
-            "ROL",
-            "SET"
-
-        ];
-
-
-        /* =====================================================
-           CREATE 5 ITEM ROWS
-        ===================================================== */
-
-        function createItemRows() {
-
-            const tbody =
-                document.getElementById("itemsBody");
-
-            tbody.innerHTML = "";
-
-
-            for (
-                let i = 1;
-                i <= 5;
-                i++
-            ) {
-
-                let itemOptions = "";
-
-                stationeryItems.forEach(item => {
-
-                    itemOptions += `
-                <option value="${escapeHtml(item)}">
-                    ${escapeHtml(item)}
-                </option>
-            `;
-
-                });
-
-
-                let uom = "";
-
-                uomOptions.forEach(option => {
-
-                    uom += `
-                <option value="${option}">
-                    ${option}
-                </option>
-            `;
-
-                });
-
-
-                let quantity = "";
-
-                for (
-                    let q = 1;
-                    q <= 10;
-                    q++
-                ) {
-
-                    quantity += `
-                <option value="${q}">
-                    ${q}
-                </option>
-            `;
-
-                }
-
-
-                tbody.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${i}
-                </td>
-
-
-                <td>
-
-                    <select class="item">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        ${itemOptions}
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="uom">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        ${uom}
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <select class="qty">
-
-                        <option value="">
-                            Choose
-                        </option>
-
-                        ${quantity}
-
-                    </select>
-
-                </td>
-
-            </tr>
-
-        `;
-
-            }
-
-        }
-
-        createItemRows();
-
-
-        /* =====================================================
-           USER SUBMIT
-        ===================================================== */
-
-        document
-            .getElementById("stationeryForm")
-            .addEventListener(
-                "submit",
-                async function (event) {
-
-                    event.preventDefault();
-
-
-                    const employee =
-                        document
-                            .getElementById("employeeName")
-                            .value
-                            .trim();
-
-
-                    const empNo =
-                        document
-                            .getElementById("empNo")
-                            .value
-                            .trim();
-
-
-                    const mobile =
-                        document
-                            .getElementById("mobile")
-                            .value
-                            .trim();
-
-
-                    const project =
-                        document
-                            .getElementById("project")
-                            .value;
-
-
-                    const company =
-                        document
-                            .getElementById("company")
-                            .value;
-
-
-                    const department =
-                        document
-                            .getElementById("department")
-                            .value;
-
-
-                    const date =
-                        document.getElementById("requestDate").value.trim();
-
-                    if (!isValidDateDDMMYYYY(date)) {
-                        showMessage(
-                            "Please enter a valid date in DD-MM-YYYY format.",
-                            true
-                        );
-                        document.getElementById("requestDate").focus();
-                        return;
-                    }
-
-
-                    const items =
-                        document.querySelectorAll(".item");
-
-
-                    const uoms =
-                        document.querySelectorAll(".uom");
-
-
-                    const quantities =
-                        document.querySelectorAll(".qty");
-
-
-                    let added = 0;
-
-
-                    items.forEach(
-                        (itemSelect, index) => {
-
-                            const item =
-                                itemSelect.value;
-
-
-                            const uom =
-                                uoms[index].value;
-
-
-                            const quantity =
-                                quantities[index].value;
-
-
-                            if (
-                                item &&
-                                uom &&
-                                quantity
-                            ) {
-
-                                requests.push({
-
-                                    "Employee":
-                                        employee,
-
-                                    "Emp-No":
-                                        empNo,
-
-                                    "Mobile":
-                                        mobile,
-
-                                    "Project":
-                                        project,
-
-                                    "Company":
-                                        company,
-
-                                    "Department":
-                                        department,
-
-                                    "Date":
-                                        date,
-
-                                    "Item":
-                                        item,
-
-                                    "UOM":
-                                        uom,
-
-                                    "Quantity":
-                                        Number(quantity)
-
-                                });
-
-
-                                added++;
-
-                            }
-
-                        }
-                    );
-
-
-                    if (added === 0) {
-
-                        showMessage(
-                            "Please select at least one stationery item, UOM and quantity.",
-                            true
-                        );
-
-                        return;
-
-                    }
-
-
-                    /*
-                       SAVE DATA TO THE SHARED ONLINE DATABASE.
-                       Every mobile/laptop sends data to the same
-                       Google Sheet.
-                    */
-
-                    try {
-                        if (!API_URL || API_URL.includes("PASTE_YOUR_")) {
-                            showMessage(
-                                "Please configure the Google Apps Script API URL first.",
-                                true
-                            );
-                            return;
-                        }
-
-                        const response = await fetch(API_URL, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "text/plain;charset=utf-8"
-                            },
-                            body: JSON.stringify({
-                                action: "submit",
-                                records: requests.slice(-added)
-                            })
-                        });
-
-                        const result = await response.json();
-
-                        if (!result.success) {
-                            throw new Error(result.message || "Submission failed.");
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        showMessage(
-                            "Unable to save the request online. Please check your internet connection and try again.",
-                            true
-                        );
-                        return;
-                    }
-
-                    showMessage(
-                        added +
-                        " stationery item(s) submitted successfully. Admin can view the request.",
-                        false
-                    );
-
-
-                    /* Clear Employee Name */
-                    document.getElementById("employeeName").value = "";
-
-                    /* Clear Employee Number */
-                    document.getElementById("empNo").value = "";
-
-                    /* Clear Mobile Number */
-                    document.getElementById("mobile").value = "";
-
-                    /* Clear Project */
-                    document.getElementById("project").value = "";
-
-                    /* Clear Company */
-                    document.getElementById("company").value = "";
-
-                    /* Clear Department */
-                    document.getElementById("department").value = "";
-
-                    /* clear remarks */
-                    document.getElementById("remarks").value = "";
-
-                    items.forEach(
-                        item => item.value = ""
-                    );
-
-
-                    uoms.forEach(
-                        uom => uom.value = ""
-                    );
-
-
-                    quantities.forEach(
-                        qty => qty.value = ""
-                    );
-
-                }
-            );
-
-        /* =====================================================
-           CLEAR ALL FORM FIELDS AFTER SUBMIT
-        ===================================================== */
-
-        /* =====================================================
-           SHOW ADMIN LOGIN
-        ===================================================== */
-
-        function showAdminLogin() {
-
-            document
-                .getElementById("userSection")
-                .classList
-                .add("hidden");
-
-
-            document
-                .getElementById("adminPanel")
-                .classList
-                .add("hidden");
-
-
-            document
-                .getElementById("adminLogin")
-                .classList
-                .remove("hidden");
-
-        }
-
-
-        /* =====================================================
-           CLOSE ADMIN LOGIN
-        ===================================================== */
-
-        function closeAdminLogin() {
-
-            document
-                .getElementById("adminLogin")
-                .classList
-                .add("hidden");
-
-
-            document
-                .getElementById("userSection")
-                .classList
-                .remove("hidden");
-
-        }
-
-
-        /* =====================================================
-           ADMIN LOGIN
-        ===================================================== */
-
-        async function adminLogin() {
-
-            const username =
-                document.getElementById("adminUsername").value.trim();
-
-            const password =
-                document.getElementById("adminPassword").value;
-
-            const loginError =
-                document.getElementById("loginError");
-
-            if (!API_URL || API_URL.includes("PASTE_YOUR_")) {
-                loginError.textContent =
-                    "Please configure the Google Apps Script API URL first.";
-                loginError.classList.remove("hidden");
-                return;
-            }
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        action: "login",
-                        username: username,
-                        password: password
-                    })
-                });
-
-                const result = await response.json();
-
-                if (!result.success) {
-                    loginError.textContent =
-                        result.message || "Invalid Admin Username or Password.";
-                    loginError.classList.remove("hidden");
-                    return;
-                }
-
-                adminToken = result.token;
-                sessionStorage.setItem("adminToken", adminToken);
-
-                document.getElementById("adminLogin")
-                    .classList.add("hidden");
-
-                document.getElementById("userSection")
-                    .classList.add("hidden");
-
-                document.getElementById("adminPanel")
-                    .classList.remove("hidden");
-
-                loginError.classList.add("hidden");
-
-                await loadAdminData();
-
-            } catch (error) {
-                console.error(error);
-                loginError.textContent =
-                    "Login failed. Check the internet connection and API URL.";
-                loginError.classList.remove("hidden");
-            }
-        }
-
-
-        /* =====================================================
-           LOAD / DISPLAY ADMIN DATA FROM SHARED DATABASE
-        ===================================================== */
-
-        async function loadAdminData() {
-
-            if (!adminToken) {
-                alert("Please login as Admin.");
-                return;
-            }
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        action: "getData",
-                        token: adminToken
-                    })
-                });
-
-                const result = await response.json();
-
-                if (!result.success) {
-                    sessionStorage.removeItem("adminToken");
-                    adminToken = "";
-                    alert(result.message || "Admin session expired.");
-                    adminLogout();
-                    return;
-                }
-
-                requests = result.records || [];
-                renderAdminTable();
-
-            } catch (error) {
-                console.error(error);
-                alert("Unable to load shared data.");
-            }
-        }
-
-        function renderAdminTable() {
-
-            const tbody =
-                document.getElementById("adminTableBody");
-
-            tbody.innerHTML = "";
-
-            if (requests.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="10" style="text-align:center;">
-                            No requests found.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            requests.forEach(request => {
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${escapeHtml(request["Employee"] || "")}</td>
-                        <td>${escapeHtml(request["Emp-No"] || "")}</td>
-                        <td>${escapeHtml(request["Mobile"] || "")}</td>
-                        <td>${escapeHtml(request["Project"] || "")}</td>
-                        <td>${escapeHtml(request["Company"] || "")}</td>
-                        <td>${escapeHtml(request["Department"] || "")}</td>
-                        <td>${escapeHtml(formatDateForDisplay(request["Date"]))}</td>
-                        <td>${escapeHtml(request["Item"] || "")}</td>
-                        <td>${escapeHtml(request["UOM"] || "")}</td>
-                        <td>${escapeHtml(String(request["Quantity"] ?? ""))}</td>
-                    </tr>
-                `;
-
-            });
-        }
-
-
-        /* =====================================================
-           EXPORT EXCEL
-           Only the single Admin account can download.
-        ===================================================== */
-
-        async function exportToExcel() {
-
-            if (!adminToken) {
-                alert("Only Admin can export Excel data.");
-                return;
-            }
-
-            await loadAdminData();
-
-            if (requests.length === 0) {
-                alert("No saved requests found.");
-                return;
-            }
-
-            const exportRequests = requests.map(request => ({
-                ...request,
-                Date: formatDateForDisplay(request["Date"])
-            }));
-
-            const worksheet =
-                XLSX.utils.json_to_sheet(exportRequests);
-
-            const workbook =
-                XLSX.utils.book_new();
-
-            XLSX.utils.book_append_sheet(
-                workbook,
-                worksheet,
-                "Stationery Requests"
-            );
-
-            XLSX.writeFile(
-                workbook,
-                "Stationery_Requests.xlsx"
-            );
-        }
-
-
-        /* =====================================================
-           CLEAR DATA
-        ===================================================== */
-
-        async function clearAllData() {
-
-            if (!adminToken) {
-                alert("Only Admin can delete data.");
-                return;
-            }
-
-            const confirmation =
-                confirm(
-                    "Are you sure you want to delete ALL stationery requests?"
-                );
-
-            if (!confirmation) {
-                return;
-            }
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        action: "clearData",
-                        token: adminToken
-                    })
-                });
-
-                const result = await response.json();
-
-                if (!result.success) {
-                    alert(result.message || "Unable to delete data.");
-                    return;
-                }
-
-                requests = [];
-                renderAdminTable();
-
-                alert("All stationery request data has been deleted.");
-
-            } catch (error) {
-                console.error(error);
-                alert("Unable to delete shared data.");
-            }
-        }
-
-
-        /* =====================================================
-           ADMIN LOGOUT
-        ===================================================== */
-
-        function adminLogout() {
-
-            sessionStorage.removeItem("adminToken");
-            adminToken = "";
-
-
-            document
-                .getElementById("adminPanel")
-                .classList
-                .add("hidden");
-
-
-            document
-                .getElementById("adminLogin")
-                .classList
-                .add("hidden");
-
-
-            document
-                .getElementById("userSection")
-                .classList
-                .remove("hidden");
-
-
-            document
-                .getElementById("adminUsername")
-                .value = "";
-
-
-            document
-                .getElementById("adminPassword")
-                .value = "";
-
-        }
-
-
-        /* =====================================================
-           MESSAGE
-        ===================================================== */
-
-        function showMessage(
-            message,
-            error = false
-        ) {
-
-            const box =
-                document.getElementById(
-                    "message"
-                );
-
-
-            box.textContent =
-                message;
-
-
-            box.style.display =
-                "block";
-
-
-            box.style.background =
-                error
-                    ? "#fee2e2"
-                    : "#eaf7ee";
-
-
-            box.style.color =
-                error
-                    ? "#991b1b"
-                    : "#166534";
-
-        }
-
-
-        /* =====================================================
-           HTML SECURITY
-        ===================================================== */
-
-        function escapeHtml(value) {
-
-            return String(value)
-
-                .replaceAll(
-                    "&",
-                    "&amp;"
-                )
-
-                .replaceAll(
-                    "<",
-                    "&lt;"
-                )
-
-                .replaceAll(
-                    ">",
-                    "&gt;"
-                )
-
-                .replaceAll(
-                    '"',
-                    "&quot;"
-                )
-
-                .replaceAll(
-                    "'",
-                    "&#039;"
-                );
-
-        }
-
-
-
-    </script>
-
-<!-- Code injected by live-server -->
 <script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
+"use strict";
+
+/*
+FRONTEND CONFIGURATION
+
+This HTML uses your supplied Apps Script URL.
+The backend must implement:
+1. submit:   {action:"submit", records:[...]}
+2. login:    {action:"login", username:"...", password:"..."}
+3. getData:  {action:"getData", token:"..."}
+4. clearData:{action:"clearData", token:"..."}
+
+Expected responses:
+{success:true}
+{success:true, token:"..."}
+{success:true, records:[...]}
+
+The Apps Script backend must authenticate protected actions and store
+requests in a shared Google Sheet. Never rely on an HTML password alone.
+*/
+
+const API_URL = "https://script.google.com/macros/s/AKfycbw0K1evJYcgvRrG4al59--Z8q3Muj3Aldg5tonEfOIIOcW3adrxJCNMOXLteHvDN0bF/exec";
+
+let requests = [];
+let adminToken = sessionStorage.getItem("adminToken") || "";
+
+const stationeryItems = [
+"A3 Envelop Cover Ocean",
+"A4 Envelop Cover Ocean",
+"Binder Clip -15 MM",
+"Binder Clip -19 MM",
+"Binder Clip -25MM",
+"Binder Clip -32MM",
+"Binder Clip -41MM",
+"Black Pen",
+"Blue Pen",
+"Box File – (Medium Size)",
+"Calculator Basic Business (For , Planning)",
+"Carbon Sheet Blue",
+"CD Marker Black (Safety)",
+"CD Marker Blue (Safety)",
+"CD Marker Green (Safety)",
+"Celotape -Small",
+"Double Sided Tape (3-MM)",
+"Drinking water Glass Medium Size",
+"Dust bin-big ( blue )",
+"Dust bin-big ( Green )",
+"Dustbin-Office Close type",
+"Fevistic",
+"Flate File",
+"Flex kwik",
+"Floor Mate",
+"Floor mop",
+"GARBAGE BAG ( Medium size )(Office Use )",
+"Gum",
+"Harpic",
+"Highlighter - multicolor",
+"Inward Stamp",
+"Lyzal",
+"Marker for White board luxor (Black)",
+"Marker for White board luxor (blue)",
+"Marker for White board luxor (Red)",
+"Marker for White board luxor(Green)",
+"Ocean Round Stamp -Chennai address",
+"Ocean Round Stamp -Kochi",
+"odonil jasmine mist",
+"Out ward Stamp",
+"Packing Tape -2''inch Brown",
+"Packing Tape -2''inch cello",
+"Penholder",
+"Permenent marker",
+"Pencil HP",
+"RED Pen",
+"Register - 3no.s (Safety)",
+"Room spray multi flavour",
+"Scale (steel)-30cm",
+"Stamp Pad Big",
+"Stamp Pad ink",
+"Stamp Pad Small",
+"Stapler Big",
+"Stapler Pin Big",
+"Stapler Pin Small (Full Box )",
+"Stapler Small",
+"Sticky notes",
+"Stretch film roll - 2 Feet (Packing Purpose)",
+"Tissue paper PKT",
+"Umberla ( Small Size )",
+"Umberla (Medium size )",
+"Water Bottle 1 ltr",
+"Whistle",
+"Writing Pad",
+"Other's"
+];
+
+const uomOptions = [
+"BOX","BUNDLE","NO's","OTHER's","PAC","PCS","PKT","ROL","SET"
+];
+
+function getTodayDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+
+document.getElementById("requestDate").value = getTodayDate();
+
+// document.getElementById("requestDate").value = todayISO();
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    })[ch]);
+}
+
+function createItemRows() {
+    const tbody = document.getElementById("itemsBody");
+    tbody.innerHTML = "";
+
+    for (let i = 1; i <= 5; i++) {
+        const tr = document.createElement("tr");
+        const numberCell = document.createElement("td");
+        numberCell.textContent = i;
+        tr.appendChild(numberCell);
+
+        const itemCell = document.createElement("td");
+        const itemSelect = document.createElement("select");
+        itemSelect.className = "item";
+        itemSelect.setAttribute("aria-label", "Stationery item row " + i);
+        itemSelect.add(new Option("Choose", ""));
+        stationeryItems.forEach(item => itemSelect.add(new Option(item, item)));
+        itemCell.appendChild(itemSelect);
+        tr.appendChild(itemCell);
+
+        const uomCell = document.createElement("td");
+        const uomSelect = document.createElement("select");
+        uomSelect.className = "uom";
+        uomSelect.setAttribute("aria-label", "UOM row " + i);
+        uomSelect.add(new Option("Choose", ""));
+        uomOptions.forEach(uom => uomSelect.add(new Option(uom, uom)));
+        uomCell.appendChild(uomSelect);
+        tr.appendChild(uomCell);
+
+        const qtyCell = document.createElement("td");
+        const qtySelect = document.createElement("select");
+        qtySelect.className = "qty";
+        qtySelect.setAttribute("aria-label", "Quantity row " + i);
+        qtySelect.add(new Option("Choose", ""));
+        for (let q = 1; q <= 10; q++) {
+            qtySelect.add(new Option(String(q), String(q)));
+        }
+        qtyCell.appendChild(qtySelect);
+        tr.appendChild(qtyCell);
+
+        tbody.appendChild(tr);
+    }
+}
+
+createItemRows();
+
+async function postApi(payload) {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        throw new Error("Server returned HTTP " + response.status);
+    }
+
+    return await response.json();
+}
+
+function showMessage(message, isError = false) {
+    const box = document.getElementById("message");
+    box.textContent = message;
+    box.style.display = "block";
+    box.style.background = isError ? "#fee2e2" : "#eaf7ee";
+    box.style.color = isError ? "#991b1b" : "#166534";
+}
+
+document.getElementById("stationeryForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const itemEls = [...document.querySelectorAll(".item")];
+    const uomEls = [...document.querySelectorAll(".uom")];
+    const qtyEls = [...document.querySelectorAll(".qty")];
+    const selectedItems = [];
+
+    for (let i = 0; i < itemEls.length; i++) {
+        const item = itemEls[i].value;
+        const uom = uomEls[i].value;
+        const quantity = qtyEls[i].value;
+
+        if (!item && !uom && !quantity) continue;
+
+        if (!item || !uom || !quantity) {
+            showMessage(
+                "Complete Item, UOM and QTY in row " + (i + 1) +
+                ", or leave the entire row blank.",
+                true
+            );
+            return;
+        }
+
+        selectedItems.push({
+            "Item": item,
+            "UOM": uom,
+            "Quantity": Number(quantity)
+        });
+    }
+
+    if (selectedItems.length === 0) {
+        showMessage("Select at least one stationery item, UOM and quantity.", true);
+        return;
+    }
+
+    const common = {
+        "Employee": document.getElementById("employeeName").value.trim(),
+        "Emp-No": document.getElementById("empNo").value.trim(),
+        "Mobile": document.getElementById("mobile").value.trim(),
+        "Project": document.getElementById("project").value,
+        "Company": document.getElementById("company").value,
+        "Department": document.getElementById("department").value,
+        "Date": document.getElementById("requestDate").value,
+        "Remarks": document.getElementById("remarks").value.trim()
+    };
+
+    const records = selectedItems.map(item => ({...common, ...item}));
+    const submitBtn = document.getElementById("submitBtn");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    try {
+        const result = await postApi({action:"submit", records});
+
+        if (!result || result.success !== true) {
+            throw new Error(result?.message || "Server did not confirm saving.");
+        }
+
+        showMessage(records.length + " stationery item(s) saved successfully.");
+
+        document.getElementById("stationeryForm").reset();
+        document.getElementById("requestDate").value = todayISO();
+        itemEls.forEach(el => el.value = "");
+        uomEls.forEach(el => el.value = "");
+        qtyEls.forEach(el => el.value = "");
+
+    } catch (error) {
+        console.error(error);
+        showMessage(
+            "Unable to save online. Check the Apps Script deployment and its submit action. " +
+            (error.message || ""),
+            true
+        );
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+    }
+});
+
+function showAdminLogin() {
+    document.getElementById("userSection").classList.add("hidden");
+    document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("adminLogin").classList.remove("hidden");
+    document.getElementById("loginError").classList.add("hidden");
+}
+
+function closeAdminLogin() {
+    document.getElementById("adminLogin").classList.add("hidden");
+    document.getElementById("userSection").classList.remove("hidden");
+}
+
+async function adminLogin() {
+    const errorBox = document.getElementById("loginError");
+    errorBox.classList.add("hidden");
+
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value;
+
+    if (!username || !password) {
+        errorBox.textContent = "Enter both username and password.";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    try {
+        const result = await postApi({action:"login", username, password});
+
+        if (!result?.success || !result.token) {
+            throw new Error(result?.message || "Invalid username or password.");
+        }
+
+        adminToken = result.token;
+        sessionStorage.setItem("adminToken", adminToken);
+
+        document.getElementById("adminLogin").classList.add("hidden");
+        document.getElementById("userSection").classList.add("hidden");
+
+        const panel = document.getElementById("adminPanel");
+        panel.classList.remove("hidden");
+        panel.classList.add("fullscreen");
+        panel.querySelector(".admin-top button").textContent = "Exit Full Screen";
+
+        await loadAdminData();
+
+    } catch (error) {
+        errorBox.textContent = error.message || "Login failed. Check the backend.";
+        errorBox.classList.remove("hidden");
+    }
+}
+
+async function loadAdminData() {
+    if (!adminToken) {
+        alert("Please log in as Admin.");
+        showAdminLogin();
+        return;
+    }
+
+    try {
+        const result = await postApi({action:"getData", token:adminToken});
+
+        if (!result?.success) {
+            throw new Error(result?.message || "Admin session expired.");
+        }
+
+        if (!Array.isArray(result.records)) {
+            throw new Error("Backend response must include a records array.");
+        }
+
+        requests = result.records;
+        renderAdminTable();
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to load shared data: " + (error.message || "Unknown error"));
+    }
+}
+
+function renderAdminTable() {
+    const search = document.getElementById("adminSearch").value.trim().toLowerCase();
+
+    const filtered = requests.filter(row =>
+        Object.values(row || {}).some(value =>
+            String(value ?? "").toLowerCase().includes(search)
+        )
+    );
+
+    document.getElementById("recordCount").textContent =
+        "Records: " + filtered.length + " shown / " + requests.length + " total";
+
+    const tbody = document.getElementById("adminTableBody");
+
+    if (filtered.length === 0) {
+        tbody.innerHTML =
+            '<tr><td colspan="11" style="text-align:center">No matching records found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(row => `
+        <tr>
+            <td>${escapeHtml(row.Employee)}</td>
+            <td>${escapeHtml(row["Emp-No"])}</td>
+            <td>${escapeHtml(row.Mobile)}</td>
+            <td>${escapeHtml(row.Project)}</td>
+            <td>${escapeHtml(row.Company)}</td>
+            <td>${escapeHtml(row.Department)}</td>
+            <td>${escapeHtml(row.Date)}</td>
+            <td>${escapeHtml(row.Item)}</td>
+            <td>${escapeHtml(row.UOM)}</td>
+            <td>${escapeHtml(row.Quantity)}</td>
+            <td>${escapeHtml(row.Remarks)}</td>
+        </tr>
+    `).join("");
+}
+
+async function exportToExcel() {
+    if (!adminToken) {
+        alert("Only the authenticated Admin can export data.");
+        return;
+    }
+
+    if (typeof XLSX === "undefined") {
+        alert("Excel library failed to load. Check your internet connection.");
+        return;
+    }
+
+    try {
+        await loadAdminData();
+
+        if (requests.length === 0) {
+            alert("No saved requests found.");
+            return;
+        }
+
+        const headers = [
+    "Employee",
+    "Emp-No",
+    "Mobile",
+    "Project",
+    "Company",
+    "Department",
+    "Date",
+    "Item",
+    "UOM",
+    "Quantity",
+    "Remarks"
+];
+
+        // Export all records returned by the backend, not only filtered table rows.
+        const rows = requests.map(row =>
+    Object.fromEntries(
+        headers.map(key => [key, row?.[key] ?? ""])
+    )
+);
+
+        const worksheet = XLSX.utils.json_to_sheet(rows, {
+    header: headers
+});
+        worksheet["!cols"] = [
+            { wch: 24 },
+    { wch: 15 },
+    { wch: 16 },
+    { wch: 22 },
+    { wch: 22 },
+    { wch: 22 },
+    { wch: 14 },
+    { wch: 42 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 40 }
+        ];
+
+        XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Stationery Requests"
+);
+
+XLSX.writeFile(
+    workbook,
+    "Stationery_Requests_" + getTodayDate() + ".xlsx"
+);
+
+    } catch (error) {
+        console.error(error);
+        alert("Excel export failed. " + (error.message || "Unknown error"));
+    }
+}
+
+async function clearAllData() {
+    if (!adminToken) {
+        alert("Only Admin can clear data.");
+        return;
+    }
+
+    if (!confirm("Delete ALL stationery requests from the shared database? This cannot be undone.")) {
+        return;
+    }
+
+    try {
+        const result = await postApi({action:"clearData", token:adminToken});
+
+        if (!result?.success) {
+            throw new Error(result?.message || "Clear operation failed.");
+        }
+
+        requests = [];
+        renderAdminTable();
+        alert("All stationery request data has been deleted.");
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to clear data: " + (error.message || "Unknown error"));
+    }
+}
+
+function adminLogout() {
+    sessionStorage.removeItem("adminToken");
+    adminToken = "";
+
+    document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("fullscreen");
+    document.getElementById("adminLogin").classList.add("hidden");
+    document.getElementById("userSection").classList.remove("hidden");
+    document.getElementById("adminUsername").value = "";
+    document.getElementById("adminPassword").value = "";
+}
+
+function toggleFullscreen() {
+    const panel = document.getElementById("adminPanel");
+    panel.classList.toggle("fullscreen");
+
+    panel.querySelector(".admin-top button").textContent =
+        panel.classList.contains("fullscreen") ? "Exit Full Screen" : "Full Screen";
+}
 </script>
-
-
-</body></html>
+</body>
+</html>
